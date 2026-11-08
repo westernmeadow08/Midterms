@@ -10,7 +10,6 @@
   --bone:#f2efe8;          /* title white */
   --ash:#8d93a3;           /* captions */
   --gop:#c8102e;           /* incumbent red */
-  --gop-deep:#5a0714;
   --tide:#1e6bff;          /* the wave */
   --tide-glow:#5fb2ff;
   --f-display:"Big Shoulders Display","Oswald","Arial Narrow",Impact,sans-serif;
@@ -21,12 +20,11 @@
 html,body{height:100%}
 body{background:var(--void);color:var(--bone);margin:0;overflow:hidden;font-family:var(--f-data);
   padding-left:max(0px,env(safe-area-inset-left,0px));padding-right:max(0px,env(safe-area-inset-right,0px))}
-#wrap{position:fixed;inset:0;display:grid;place-items:center;background:var(--void)}
-#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:var(--void)}
+#wrap{position:fixed;inset:0;background:var(--void)}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;overflow:hidden;background:var(--void);transform-origin:center center}
 .layer{position:absolute;inset:0;will-change:opacity,transform}
 .bg{background-size:cover;background-position:center;opacity:0}
 .bg::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 35%,rgba(5,6,10,.85) 100%)}
-#grade{background:linear-gradient(180deg,rgba(5,6,10,.55),transparent 30%,transparent 70%,rgba(5,6,10,.7));pointer-events:none}
 #grain{width:100%;height:100%;mix-blend-mode:overlay;opacity:.22;pointer-events:none;image-rendering:pixelated}
 #flash{background:var(--bone);opacity:0;mix-blend-mode:screen}
 .bar{position:absolute;left:0;right:0;height:138px;background:#000;z-index:50}
@@ -46,7 +44,49 @@ body{background:var(--void);color:var(--bone);margin:0;overflow:hidden;font-fami
 .voice{font-family:var(--f-voice);font-style:italic;font-weight:500}
 .center{left:0;right:0;text-align:center}
 
-/* versus cards */
+/* senate split screen with photos */
+#senate{opacity:0}
+.ph{position:absolute;top:0;bottom:0;width:50%;overflow:hidden}
+.ph.l{left:0}.ph.r{right:0}
+.ph img{position:absolute;inset:-4%;width:108%;height:108%;object-fit:cover}
+.ph.l img{object-position:50% 30%;filter:saturate(.8) contrast(1.06) brightness(.9)}
+.ph.r img{object-position:50% 22%;filter:saturate(.7) contrast(1.1) brightness(.85)}
+.ph::before{content:"";position:absolute;inset:0;z-index:1;mix-blend-mode:soft-light}
+.ph.l::before{background:linear-gradient(160deg,rgba(30,107,255,.75),rgba(5,6,10,.2))}
+.ph.r::before{background:linear-gradient(200deg,rgba(200,16,46,.75),rgba(5,6,10,.2))}
+.ph::after{content:"";position:absolute;inset:0;z-index:2;background:linear-gradient(0deg,rgba(5,6,10,.97) 0%,rgba(5,6,10,.75) 26%,transparent 58%)}
+.cap{position:absolute;z-index:3;bottom:168px;display:flex;flex-direction:column;gap:10px}
+.ph.l .cap{left:110px}.ph.r .cap{right:110px;text-align:right;align-items:flex-end}
+.cap .party{font-size:20px;letter-spacing:.35em;text-transform:uppercase}
+.cap .nm{font-family:var(--f-display);font-weight:900;font-size:128px;line-height:.82;text-transform:uppercase}
+.cap .role{font-family:var(--f-voice);font-style:italic;font-size:38px;opacity:.9}
+.cap .rule{height:7px;width:380px;transform-origin:left}
+.ph.r .cap .rule{transform-origin:right}
+.ph.l .party{color:var(--tide-glow)}.ph.l .rule{background:var(--tide);box-shadow:0 0 30px var(--tide)}
+.ph.r .party{color:#ff5a6e}.ph.r .rule{background:var(--gop);box-shadow:0 0 30px var(--gop)}
+#seam{position:absolute;top:0;bottom:0;left:50%;width:3px;margin-left:-1.5px;background:var(--bone);box-shadow:0 0 24px var(--bone);transform-origin:top;z-index:4}
+#senVs{position:absolute;left:0;right:0;top:470px;text-align:center;z-index:5;font-family:var(--f-voice);font-style:italic;font-size:72px;text-shadow:0 2px 20px rgba(0,0,0,.8);opacity:0}
+#senK{top:178px;z-index:5}
+
+/* trump scene */
+#trump{opacity:0}
+#dossier{position:absolute;left:1160px;top:196px;width:540px;height:688px;overflow:hidden;background:#111;
+  box-shadow:0 30px 80px rgba(0,0,0,.7);outline:1px solid rgba(242,239,232,.25);outline-offset:10px}
+#dossier img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 22%}
+#dossierWater{position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(180deg,rgba(95,178,255,.85),rgba(30,107,255,.75) 6%,rgba(8,32,110,.92));
+  border-top:3px solid #cfe6ff;box-shadow:0 -10px 40px rgba(95,178,255,.6)}
+#stamp{position:absolute;left:1110px;top:690px;padding:14px 26px 10px;border:6px solid var(--gop);color:var(--gop);
+  font-family:var(--f-display);font-weight:900;font-size:76px;line-height:.9;text-transform:uppercase;letter-spacing:.04em;opacity:0;background:rgba(5,6,10,.35)}
+#stamp small{display:block;font-family:var(--f-data);font-size:24px;letter-spacing:.3em;font-weight:600;color:var(--bone);margin-bottom:6px}
+#tk{left:150px;top:230px}
+#tMil{left:142px;top:290px;font-size:230px;color:var(--gop)}
+#tQuote{left:150px;top:520px;width:860px;white-space:normal;font-family:var(--f-voice);font-style:italic;font-size:46px;line-height:1.2}
+#tQuote cite{display:block;font-family:var(--f-data);font-style:normal;font-size:17px;letter-spacing:.2em;text-transform:uppercase;color:var(--ash);margin-top:18px}
+#tSink{left:146px;top:220px;font-size:132px;line-height:.9;white-space:normal;width:900px}
+#tSink .arrow{color:var(--gop);display:inline-block}
+#tAnchor{left:150px;top:650px;width:900px;white-space:normal;font-family:var(--f-voice);font-style:italic;font-size:64px;line-height:1.1}
+
+/* governor cards */
 .vs{position:absolute;inset:0;opacity:0;display:grid;grid-template-columns:1fr 160px 1fr;align-items:center;padding:0 150px}
 .side{display:flex;flex-direction:column;gap:14px}
 .side.r{text-align:right;align-items:flex-end}
@@ -73,12 +113,11 @@ body{background:var(--void);color:var(--bone);margin:0;overflow:hidden;font-fami
 #results .src{font-size:14px;color:var(--ash);letter-spacing:.08em}
 
 /* clock */
-#clock{position:absolute;left:150px;bottom:200px;opacity:0;font-family:var(--f-data)}
+#clock{position:absolute;left:150px;bottom:200px;opacity:0}
 #clock .tm{font-size:120px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-#clock .lb{font-size:20px;letter-spacing:.35em;color:var(--ash);text-transform:uppercase}
-#reporting{position:absolute;right:150px;bottom:200px;opacity:0;text-align:right;font-family:var(--f-data)}
+#clock .lb,#reporting .lb{font-size:20px;letter-spacing:.35em;color:var(--ash);text-transform:uppercase}
+#reporting{position:absolute;right:150px;bottom:200px;opacity:0;text-align:right}
 #reporting .n{font-size:120px;font-weight:600;font-variant-numeric:tabular-nums}
-#reporting .lb{font-size:20px;letter-spacing:.35em;color:var(--ash);text-transform:uppercase}
 
 /* title */
 #title .huge{font-size:300px;letter-spacing:.02em;
@@ -102,7 +141,6 @@ body{background:var(--void);color:var(--bone);margin:0;overflow:hidden;font-fami
   <div class="layer bg" id="bgCapitol" style="background-image:url(assets/img/capitol.jpg)"></div>
   <div class="layer bg" id="bgBallot" style="background-image:url(assets/img/ballot.jpg)"></div>
   <div class="layer bg" id="bgCrowd" style="background-image:url(assets/img/crowd.jpg)"></div>
-  <div class="layer" id="grade"></div>
 
   <div id="mapWrap"><svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Map of Texas counties" viewBox="0 0 1000 1000" id="texas-map">
 <title>Texas counties — vector map for animation</title>
@@ -372,32 +410,48 @@ body{background:var(--void);color:var(--bone);margin:0;overflow:hidden;font-fami
   <!-- S2 -->
   <div class="t huge" id="s2a" style="left:150px;top:300px;font-size:230px;color:var(--gop)">Red.</div>
   <div class="t huge" id="s2b" style="left:150px;top:500px;font-size:150px">Unbreakable.</div>
-  <div class="t voice" id="s2c" style="left:155px;top:690px;font-size:56px;color:var(--bone)">They said it would never move.</div>
+  <div class="t voice" id="s2c" style="left:155px;top:690px;font-size:56px">They said it would never move.</div>
   <div class="t kicker" id="s2d" style="left:155px;top:790px">No Democrat elected statewide since 1994</div>
   <!-- S3 -->
   <div class="t voice" id="s3a" style="left:150px;top:430px;font-size:76px;line-height:1.1;white-space:normal;width:640px">Then the water started rising.</div>
-  <!-- S4 -->
-  <div class="race t kicker" id="s4k">U.S. Senate · Texas</div>
-  <div class="vs" id="vsSen">
-    <div class="side d"><div class="party">Democrat</div><div class="nm">James<br>Talarico</div><div class="rule"></div><div class="role">Former schoolteacher</div></div>
-    <div class="vsMark">vs.</div>
-    <div class="side r rp"><div class="party">Republican</div><div class="nm">Ken<br>Paxton</div><div class="rule"></div><div class="role">Attorney General</div></div>
+
+  <!-- S4: Senate, photo split -->
+  <div class="layer" id="senate">
+    <div class="ph l"><img src="assets/photos/talarico.jpg" alt="James Talarico speaking at a rally">
+      <div class="cap"><div class="party">Democrat</div><div class="nm">James<br>Talarico</div><div class="rule"></div><div class="role">Former schoolteacher</div></div></div>
+    <div class="ph r"><img src="assets/photos/paxton.jpg" alt="Ken Paxton">
+      <div class="cap"><div class="party">Republican</div><div class="nm">Ken<br>Paxton</div><div class="rule"></div><div class="role">Attorney General</div></div></div>
+    <div id="seam"></div>
+    <div id="senVs">vs.</div>
+    <div class="race t kicker" id="senK" style="color:var(--bone)">U.S. Senate · Texas</div>
   </div>
-  <!-- S5 -->
+
+  <!-- S5: Trump -->
+  <div class="layer" id="trump">
+    <div id="dossier"><img src="assets/photos/paxton.jpg" alt="Ken Paxton"><div id="dossierWater"></div></div>
+    <div id="stamp"><small>Endorsed by</small>Donald Trump</div>
+    <div class="t kicker" id="tk">The President's man</div>
+    <div class="t huge" id="tMil">$ Millions</div>
+    <div class="t" id="tQuote">&ldquo;Trump had poured millions of dollars into the Senate race.&rdquo;<cite>The National Desk · Nov. 4, 2026</cite></div>
+    <div class="t huge" id="tSink">Trump's popularity <span class="arrow">&darr;</span> sinks</div>
+    <div class="t" id="tAnchor">His endorsement became an anchor.</div>
+  </div>
+
+  <!-- S6: Governor -->
   <div class="race t kicker" id="s5k">Governor · Texas</div>
   <div class="vs" id="vsGov">
     <div class="side d"><div class="party">Democrat</div><div class="nm">Gina<br>Hinojosa</div><div class="rule"></div><div class="role">Austin state representative</div></div>
     <div class="vsMark">vs.</div>
     <div class="side r rp"><div class="party">Republican</div><div class="nm">Greg<br>Abbott</div><div class="rule"></div><div class="role">Three-term incumbent</div></div>
   </div>
-  <!-- S6 -->
+  <!-- S7 -->
   <div class="t center huge" id="s6a" style="top:300px;font-size:200px">November 3</div>
   <div class="t center kicker" id="s6b" style="top:250px">Election Night · 2026</div>
   <div id="clock"><div class="tm" id="clockT">6:58</div><div class="lb">Polls close · CT</div></div>
   <div id="reporting"><div class="n" id="repN">0%</div><div class="lb">Expected vote in</div></div>
-  <!-- S7 -->
+  <!-- S8 -->
   <div class="t voice" id="s7a" style="left:150px;top:280px;font-size:72px">And the wall&hellip;</div>
-  <div class="t huge" id="s7b" style="left:150px;top:380px;font-size:250px;color:var(--bone)">Breaks.</div>
+  <div class="t huge" id="s7b" style="left:150px;top:380px;font-size:250px">Breaks.</div>
   <div id="results">
     <div class="hd"><span>U.S. Senate</span><span>99% in</span></div>
     <div class="row win"><span>Talarico (D)</span><div class="trk"><div class="fill" id="fT" style="background:var(--tide)"></div></div><span class="pct" id="pT">0%</span></div>
@@ -405,10 +459,8 @@ body{background:var(--void);color:var(--bone);margin:0;overflow:hidden;font-fami
     <div class="gov">Governor: <b>Hinojosa</b> unseats Abbott</div>
     <div class="src">Projections via ABC News / NBC News, Nov. 3, 2026</div>
   </div>
-  <!-- S8 -->
-  <div id="title" class="t center" style="top:330px">
-    <div class="huge">Blue Tsunami</div>
-  </div>
+  <!-- S9 -->
+  <div id="title" class="t center" style="top:330px"><div class="huge">Blue Tsunami</div></div>
   <div class="t center voice" id="s8b" style="top:650px;font-size:68px">The night Texas turned.</div>
   <div class="t center kicker" id="s8c" style="top:770px">A documentary · Coming soon</div>
 
@@ -418,37 +470,33 @@ body{background:var(--void);color:var(--bone);margin:0;overflow:hidden;font-fami
 </div>
 </div>
 
-<div id="ui"><button id="play" type="button">&#9654;&nbsp; Play trailer</button><div id="hint">Sound on · 31 sec · Space to pause · R to restart</div></div>
+<div id="ui"><button id="play" type="button">&#9654;&nbsp; Play trailer</button><div id="hint">Sound on · 36 sec · Space to pause · R to restart</div></div>
 <audio id="snd" src="assets/soundtrack.mp3" preload="auto"></audio>
 
 <script>
 (()=>{
-const DUR=31.5;
+const DUR=35.8;
 const $=id=>document.getElementById(id);
 const stage=$('stage');
 const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
 const seg=(t,a,b)=>clamp((t-a)/(b-a));
-const eo=x=>1-Math.pow(1-x,3), ei=x=>x*x*x, eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const eo=x=>1-Math.pow(1-x,3), eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
 const expo=x=>x>=1?1:1-Math.pow(2,-10*x);
-// visibility envelope: fade in over fi starting at a, fade out over fo ending at b
 const env=(t,a,b,fi=.5,fo=.5)=>Math.min(seg(t,a,a+fi),1-seg(t,b-fo,b));
+function rng(s){return()=>{s=(s*16807)%2147483647;return s/2147483647}}
 
-function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform=`scale(${s}) translate(-50%,-50%)`;stage.style.transformOrigin='0 0';
-  stage.style.left='50%';stage.style.top='50%';stage.style.transform=`translate(-50%,-50%) scale(${s})`;stage.style.transformOrigin='center center';}
+function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform=`translate(-50%,-50%) scale(${s})`}
 addEventListener('resize',fit);fit();
 
 /* ---- map prep ---- */
 const svg=document.querySelector('#mapWrap svg');
 const counties=[...svg.querySelectorAll('#counties path')];
+const r0=rng(3);
 const C=counties.map(p=>({el:p,cx:+p.dataset.cx,cy:+p.dataset.cy}));
-// red cascade: northwest -> southeast
-C.forEach(c=>{c.redDelay=((c.cx*0.55+c.cy*0.45)/1000)*1.6+Math.random()*0.25});
-// tide flood origin: the big metros (Houston, Dallas, Austin, San Antonio, El Paso)
-const metros={'48201':1,'48113':1,'48453':1,'48029':1,'48141':1};
-const ids=counties.map(p=>p.id.slice(1));
-const origins=C.filter((c,i)=>metros[ids[i]]);
-C.forEach(c=>{let d=1e9;origins.forEach(o=>{d=Math.min(d,Math.hypot(c.cx-o.cx,c.cy-o.cy))});c.blueDelay=d/520+Math.random()*0.12});
-// water + cracks layers
+C.forEach(c=>{c.redDelay=((c.cx*0.55+c.cy*0.45)/1000)*1.4+r0()*0.25});
+const metros={'48201':1,'48113':1,'48453':1,'48029':1,'48141':1}; // Harris, Dallas, Travis, Bexar, El Paso
+const origins=C.filter((c,i)=>metros[counties[i].id.slice(1)]);
+C.forEach(c=>{let d=1e9;origins.forEach(o=>{d=Math.min(d,Math.hypot(c.cx-o.cx,c.cy-o.cy))});c.blueDelay=d/520+r0()*0.12});
 const NS='http://www.w3.org/2000/svg';
 const defs=svg.querySelector('defs');
 const cp=document.createElementNS(NS,'clipPath');cp.id='txclip';
@@ -461,15 +509,12 @@ const water=document.createElementNS(NS,'path');water.setAttribute('fill','url(#
 const foam=document.createElementNS(NS,'path');foam.setAttribute('fill','none');foam.setAttribute('stroke','#cfe6ff');foam.setAttribute('stroke-width','3');foam.setAttribute('opacity','.8');
 wg.append(water,foam);svg.insertBefore(wg,$('outline'));
 const crackG=document.createElementNS(NS,'g');crackG.id='cracks';svg.insertBefore(crackG,$('outline'));
-// jagged cracks running north-south through the state
-function rng(s){return()=>{s=(s*16807)%2147483647;return s/2147483647}}
 const r=rng(7);const cracks=[];
 [[470,40],[620,180],[300,330],[760,420],[540,560]].forEach(([x,y],k)=>{let d=`M${x},${y}`,cx=x,cy=y;const n=9+Math.floor(r()*5);
-  for(let i=0;i<n;i++){cx+= (r()-.5)*90;cy+=30+r()*45;d+=`L${cx.toFixed(0)},${cy.toFixed(0)}`}
+  for(let i=0;i<n;i++){cx+=(r()-.5)*90;cy+=30+r()*45;d+=`L${cx.toFixed(0)},${cy.toFixed(0)}`}
   const p=document.createElementNS(NS,'path');p.setAttribute('d',d);crackG.appendChild(p);const L=p.getTotalLength();p.style.strokeDasharray=L;p.style.strokeDashoffset=L;cracks.push({p,L,k})});
 const outline=$('outline');const OL=outline.getTotalLength();outline.style.strokeDasharray=OL;
-
-function waterPath(level,t,amp){ // level: 0 (none) .. 1 (full) in 1000-unit space
+function waterPath(level,t,amp){
   const y0=1000-level*1060;let d=`M-20,1020L-20,${y0}`,f=`M-20,${y0}`;
   for(let x=-20;x<=1020;x+=20){const y=y0+Math.sin(x/70+t*3.1)*amp+Math.sin(x/31-t*4.7)*amp*.45;d+=`L${x},${y.toFixed(1)}`;f+=`L${x},${y.toFixed(1)}`}
   return [d+'L1020,1020Z',f];
@@ -481,123 +526,143 @@ function grain(frame){const rr=rng(frame*7919+13);const d=gimg.data;for(let i=0;
 
 /* ---- helpers ---- */
 const S=(id,o,tf,extra)=>{const e=typeof id==='string'?$(id):id;e.style.opacity=o.toFixed(3);if(tf!==undefined)e.style.transform=tf;if(extra)Object.assign(e.style,extra)};
-const rise=(t,a,dur=.7,dist=40)=>{const p=eo(seg(t,a,a+dur));return `translateY(${(1-p)*dist}px)`};
+const rise=(t,a,dur=.7,dist=40)=>`translateY(${(1-eo(seg(t,a,a+dur)))*dist}px)`;
 const blurIn=(t,a,dur=.8)=>`blur(${(1-eo(seg(t,a,a+dur)))*14}px)`;
 function bg(id,t,a,b,z0=1.08,z1=1.0,pan=0){const o=env(t,a,b,.6,.6);const p=seg(t,a,b);S(id,o,`scale(${z0+(z1-z0)*p}) translateX(${pan*p}px)`)}
-function vsCard(root,t,a,b){
-  const o=env(t,a,b,.35,.45);root.style.opacity=o;
-  const sides=root.querySelectorAll('.side');
-  sides.forEach((s,i)=>{const st=a+i*0.35;const p=eo(seg(t,st,st+.7));s.style.transform=`translateX(${(i?1:-1)*(1-p)*90}px)`;s.style.opacity=p;
-    s.querySelector('.rule').style.transform=`scaleX(${expo(seg(t,st+.2,st+1))})`;});
-  root.querySelector('.vsMark').style.opacity=seg(t,a+.6,a+1.1);
-  root.style.transform=`scale(${1+seg(t,a,b)*0.03})`;
-}
+function rules(root,t,a,step){root.querySelectorAll('.rule').forEach((el,i)=>{el.style.transform=`scaleX(${expo(seg(t,a+i*step+.2,a+i*step+1))})`})}
 
-let shake=0;
-/* ---- the timeline: render(t) is pure, so playback and frame export match ---- */
+/* Timeline (seconds), locked to the score's hits at 0.5 / 7.75 / 15.25 / 22.5 / 30.0
+   VO: 0.4 wall · 3.8 red · 7.75 water · 10.6 senate · 13.9 trump · 22.4 governor · 25.7 nov 3 · 28.38 breaks(30.0) · 31.3 title */
+const T={wave:7.75,sen:10.5,trump:13.8,stamp:15.25,sink:16.58,anchor:18.82,gov:22.3,nov:25.6,brk:28.3,hit:30.0,title:31.2};
+let shake=0, jit=rng(1);
 function render(t){
-  const frame=Math.floor(t*24);grain(frame);
-  // letterbox breathes in on the open, opens wider for the title
-  const bar=138*eo(seg(t,0,1.2))-40*eo(seg(t,26.4,27.4));
+  jit=rng(Math.floor(t*30)+1);
+  grain(Math.floor(t*24));
+  const bar=138*eo(seg(t,0,1.2))-40*eo(seg(t,T.title,T.title+1));
   $('barT').style.height=$('barB').style.height=Math.max(0,bar)+'px';
 
-  // backgrounds
-  bg('bgPlains',t,3.3,9.4,1.12,1.0,-40);
-  bg('bgWave',t,9.0,12.9,1.18,1.04,30);
-  bg('bgCapitol',t,12.4,19.6,1.05,1.15,0);
-  bg('bgBallot',t,19.3,23.2,1.2,1.05,0);
-  bg('bgCrowd',t,26.2,DUR+1,1.15,1.0,0);
-  // dim plates under type-heavy scenes
-  $('bgCapitol').style.filter='brightness(.42) saturate(.7)';
-  $('bgPlains').style.filter=`brightness(${.55-.25*seg(t,4,9)}) saturate(.9)`;
-  $('bgBallot').style.filter='brightness(.5)';
-  $('bgCrowd').style.filter=`brightness(${.35+.25*seg(t,26.5,29)})`;
+  // background plates
+  bg('bgPlains',t,3.3,T.wave+.2,1.12,1.0,-40);
+  bg('bgWave',t,T.wave-.1,T.sen+.4,1.18,1.04,30);
+  bg('bgCapitol',t,T.trump-.2,T.nov+.2,1.05,1.15,0);
+  bg('bgBallot',t,T.nov-.2,T.brk+.3,1.2,1.05,0);
+  bg('bgCrowd',t,T.title-.6,DUR+1,1.15,1.0,0);
+  $('bgPlains').style.filter=`brightness(${.55-.25*seg(t,4,T.wave)}) saturate(.9)`;
   $('bgWave').style.filter='brightness(.75)';
+  $('bgCapitol').style.filter=`brightness(${t<T.gov?.22:.42}) saturate(.6)`;
+  $('bgBallot').style.filter='brightness(.5)';
+  $('bgCrowd').style.filter=`brightness(${.35+.25*seg(t,T.title,T.title+2.5)})`;
 
-  // MAP: visible 0.6-12.9 and 22.9-26.8
-  const mapO=Math.max(env(t,0.6,12.9,.8,.7),env(t,22.8,26.9,.3,.6));
-  const mapScale=t<13? 0.72+0.28*eio(seg(t,3.0,4.4))+0.04*seg(t,4.4,12.9) : 1.0+0.05*seg(t,22.8,26.9);
-  const mapX=t<13? 360*eio(seg(t,3.2,4.4)) : 380;
-  S('mapWrap',mapO,`translate(${mapX+shake*(Math.random()-.5)}px,${shake*(Math.random()-.5)}px) scale(${mapScale})`);
+  // MAP
+  const mapO=Math.max(env(t,0.6,T.sen+.2,.8,.6),env(t,T.brk-.1,T.title+.3,.3,.6));
+  const mapScale=t<T.sen+1? 0.72+0.28*eio(seg(t,3.0,4.4))+0.04*seg(t,4.4,T.sen) : 1.0+0.05*seg(t,T.brk,T.title);
+  const mapX=t<T.sen+1? 360*eio(seg(t,3.2,4.4)) : 380;
+  S('mapWrap',mapO,`translate(${mapX+shake*(jit()-.5)}px,${shake*(jit()-.5)}px) scale(${mapScale})`);
   outline.style.strokeDashoffset=OL*(1-eio(seg(t,0.6,3.2)));
-  outline.style.stroke = t>25? 'var(--tide-glow)':'var(--bone)';
-  outline.style.filter = `drop-shadow(0 0 ${8+18*seg(t,24.9,25.4)}px ${t>25?'#1e6bff':'rgba(200,16,46,.9)'})`;
-  // counties: red cascade 3.6->6, tint toward blue after the break
+  outline.style.stroke=t>T.hit?'var(--tide-glow)':'var(--bone)';
+  outline.style.filter=`drop-shadow(0 0 ${8+18*seg(t,T.hit-.1,T.hit+.4)}px ${t>T.hit?'#1e6bff':'rgba(200,16,46,.9)'})`;
   C.forEach(c=>{
     const red=eo(seg(t,3.6+c.redDelay,4.1+c.redDelay));
-    const blue=eo(seg(t,25.0+c.blueDelay,25.35+c.blueDelay));
-    c.el.style.opacity=(t<0.6?0:Math.max(red, t>22?1:0)).toFixed(3);
-    c.el.style.fill= blue>0? `rgb(${Math.round(200+(30-200)*blue)},${Math.round(16+(107-16)*blue)},${Math.round(46+(255-46)*blue)})` : '';
+    const blue=eo(seg(t,T.hit+c.blueDelay,T.hit+.35+c.blueDelay));
+    c.el.style.opacity=(t<0.6?0:Math.max(red,t>T.brk-1?1:0)).toFixed(3);
+    c.el.style.fill=blue>0?`rgb(${Math.round(200-170*blue)},${Math.round(16+91*blue)},${Math.round(46+209*blue)})`:'';
   });
-  // water
   let level=0,amp=10;
-  if(t>9.0&&t<13) level=.34*eio(seg(t,9.2,12.4));
-  if(t>22) {level=.34+0.02*Math.sin(t*2)-0.0*seg(t,22,24.9); amp=10+20*seg(t,24,25);
-    level+=0.8*expo(seg(t,25.0,26.2));}
+  if(t>T.wave-.2&&t<T.sen+1) level=.34*eio(seg(t,T.wave,T.sen-.2));
+  if(t>T.brk-1){level=.34+0.02*Math.sin(t*2);amp=10+20*seg(t,T.hit-1,T.hit);level+=0.8*expo(seg(t,T.hit,T.hit+1.2))}
   const [wd,fd]=waterPath(level,t,amp);water.setAttribute('d',wd);foam.setAttribute('d',fd);
-  wg.style.opacity = level>0?1:0;
-  // cracks 23.6-25.0, then shatter
-  cracks.forEach(c=>{const st=23.7+c.k*0.22;const p=eio(seg(t,st,st+0.9));c.p.style.strokeDashoffset=c.L*(1-p);
-    c.p.style.opacity=(p>0? (t<25? .95 : 1-seg(t,25,25.5)) :0).toFixed(3);});
-  shake = t>23.9&&t<25.0 ? 4+10*seg(t,23.9,25) : (t>=25&&t<25.9 ? 26*(1-seg(t,25,25.9)) : 0);
+  wg.style.opacity=level>0?1:0;
+  cracks.forEach(c=>{const st=T.hit-1.3+c.k*0.2;const p=eio(seg(t,st,st+0.9));c.p.style.strokeDashoffset=c.L*(1-p);
+    c.p.style.opacity=(p>0?(t<T.hit?.95:1-seg(t,T.hit,T.hit+.5)):0).toFixed(3)});
+  shake=t>T.hit-1.1&&t<T.hit?4+10*seg(t,T.hit-1.1,T.hit):(t>=T.hit&&t<T.hit+.9?26*(1-seg(t,T.hit,T.hit+.9)):0);
 
   // S1
-  S('s1k',env(t,0.9,3.4,.8,.4)*.9,rise(t,0.9));
-  S('s1v',env(t,0.4,3.5,.7,.35),rise(t,0.4,1));
-  // S2  (VO 3.5-9.1: "Red. / Unbreakable. / They said it would never move.")
-  S('s2a',env(t,3.7,9.0,.25,.4),`scale(${1.25-0.25*eo(seg(t,3.7,4.1))})`,{filter:blurIn(t,3.7,.4),transformOrigin:'left center'});
-  S('s2b',env(t,4.75,9.0,.25,.4),`scale(${1.2-0.2*eo(seg(t,4.75,5.15))})`,{filter:blurIn(t,4.75,.4),transformOrigin:'left center'});
-  S('s2c',env(t,6.2,9.0,.6,.4),rise(t,6.2));
-  S('s2d',env(t,7.0,9.0,.6,.4)*.9,rise(t,7.0));
+  S('s1k',env(t,0.9,3.5,.8,.4)*.9,rise(t,0.9));
+  S('s1v',env(t,0.4,3.6,.7,.35),rise(t,0.4,1));
+  // S2 (VO 3.8: Red 3.8, Unbreakable 4.64, They said 5.61)
+  S('s2a',env(t,3.8,T.wave-.1,.25,.4),`scale(${1.25-0.25*eo(seg(t,3.8,4.2))})`,{filter:blurIn(t,3.8,.4),transformOrigin:'left center'});
+  S('s2b',env(t,4.62,T.wave-.1,.25,.4),`scale(${1.2-0.2*eo(seg(t,4.62,5.0))})`,{filter:blurIn(t,4.62,.4),transformOrigin:'left center'});
+  S('s2c',env(t,5.6,T.wave-.1,.6,.4),rise(t,5.6));
+  S('s2d',env(t,6.2,T.wave-.1,.6,.4)*.9,rise(t,6.2));
   // S3
-  S('s3a',env(t,9.3,12.7,.7,.4),rise(t,9.3,1.2,30),{filter:blurIn(t,9.3,1.2)});
-  // S4 / S5
-  S('s4k',env(t,12.7,16.5,.4,.4),rise(t,12.7));
-  vsCard($('vsSen'),t,12.75,16.55);
-  S('s5k',env(t,16.6,19.4,.35,.35),rise(t,16.6));
-  vsCard($('vsGov'),t,16.65,19.45);
-  // S6
-  S('s6b',env(t,19.5,22.9,.4,.4)*.9,rise(t,19.5));
-  S('s6a',env(t,19.6,22.9,.5,.4),`scale(${1.06-0.06*eo(seg(t,19.6,22.9))})`);
-  const ck=seg(t,20.2,21.6);const mins=58+Math.floor(ck*2);
+  S('s3a',env(t,T.wave+.1,T.sen+.1,.7,.4),rise(t,T.wave+.1,1.2,30),{filter:blurIn(t,T.wave+.1,1.2)});
+
+  // S4 Senate photo split
+  $('senate').style.opacity=env(t,T.sen,T.trump+.3,.35,.45);
+  document.querySelectorAll('#senate .ph').forEach((p,i)=>{const st=T.sen+i*0.3;const q=eo(seg(t,st,st+.8));
+    p.style.clipPath=i?`inset(0 0 0 ${(1-q)*100}%)`:`inset(0 ${(1-q)*100}% 0 0)`;
+    p.querySelector('img').style.transform=`scale(${1.0+0.06*seg(t,T.sen,T.trump)}) translateY(${-10*seg(t,T.sen,T.trump)}px)`;
+    const cap=p.querySelector('.cap');const c=eo(seg(t,st+.35,st+1));cap.style.opacity=c;cap.style.transform=`translateY(${(1-c)*30}px)`});
+  rules($('senate'),t,T.sen+.3,.3);
+  $('seam').style.transform=`scaleY(${expo(seg(t,T.sen+.5,T.sen+1.1))})`;
+  S('senVs',seg(t,T.sen+.9,T.sen+1.4));
+  S('senK',seg(t,T.sen+.6,T.sen+1.1),rise(t,T.sen+.6));
+
+  // S5 Trump
+  $('trump').style.opacity=env(t,T.trump,T.gov,.4,.5);
+  const dIn=eo(seg(t,T.trump,T.trump+.9));
+  const sinkP=eio(seg(t,T.sink,T.gov-.3));
+  $('dossier').style.transform=`translate(${(1-dIn)*120}px,${sinkP*60}px) rotate(${2-1*dIn}deg)`;
+  $('dossier').querySelector('img').style.filter=`grayscale(${.3+.7*sinkP}) brightness(${.9-.35*sinkP}) contrast(1.1)`;
+  $('dossierWater').style.height=(100*eio(seg(t,T.sink+.2,T.anchor+1.4)))+'%';
+  const sp=seg(t,T.stamp,T.stamp+.22);
+  S('stamp',sp>0?Math.min(1,sp*3)*(1-0.25*sinkP):0,`rotate(-9deg) scale(${1.8-0.8*eo(sp)}) translateY(${sinkP*70}px)`);
+  S('tk',env(t,T.trump+.1,T.sink,.5,.35)*.95,rise(t,T.trump+.1));
+  S('tMil',env(t,14.7,T.sink,.25,.35),`scale(${1.15-0.15*eo(seg(t,14.7,15.1))})`,{transformOrigin:'left center',filter:blurIn(t,14.7,.4)});
+  S('tQuote',env(t,15.5,T.sink,.6,.35),rise(t,15.5));
+  S('tSink',env(t,T.sink+.05,T.gov,.4,.45),rise(t,T.sink+.05,.6));
+  $('tSink').querySelector('.arrow').style.transform=`translateY(${30*eio(seg(t,T.sink+.3,T.sink+1.6))}px)`;
+  S('tAnchor',env(t,T.anchor,T.gov,.6,.45),rise(t,T.anchor,.9));
+
+  // S6 Governor (hit at 22.5)
+  S('s5k',env(t,T.gov+.1,T.nov,.35,.35),rise(t,T.gov+.1));
+  const gv=$('vsGov');gv.style.opacity=env(t,T.gov+.15,T.nov,.3,.4);
+  gv.querySelectorAll('.side').forEach((s,i)=>{const st=T.gov+.2+i*.35;const p=eo(seg(t,st,st+.7));s.style.transform=`translateX(${(i?1:-1)*(1-p)*90}px)`;s.style.opacity=p});
+  rules(gv,t,T.gov+.2,.35);
+  gv.querySelector('.vsMark').style.opacity=seg(t,T.gov+.8,T.gov+1.3);
+  gv.style.transform=`scale(${1+seg(t,T.gov,T.nov)*0.03})`;
+
+  // S7 Nov 3
+  S('s6b',env(t,T.nov,T.brk,.4,.4)*.9,rise(t,T.nov));
+  S('s6a',env(t,T.nov+.1,T.brk,.5,.4),`scale(${1.06-0.06*eo(seg(t,T.nov,T.brk))})`);
+  const ck=seg(t,T.nov+.5,T.nov+1.7);const mins=58+Math.floor(ck*2);
   $('clockT').textContent=mins>=60?'7:00':'6:'+mins;
-  S('clock',env(t,20.0,22.9,.4,.4),rise(t,20.0));
-  S('reporting',env(t,20.4,22.9,.4,.4),rise(t,20.4));
-  $('repN').textContent=Math.round(99*eio(seg(t,21.4,22.8)))+'%';
-  // S7
-  S('s7a',env(t,23.0,26.6,.5,.4),rise(t,23.0));
-  S('s7b',env(t,24.95,26.6,.08,.4),`scale(${1.35-0.35*expo(seg(t,24.95,25.3))})`,{transformOrigin:'left center',color:t>25.1?'var(--tide-glow)':'var(--bone)',textShadow:`0 0 ${40*seg(t,25,25.5)}px rgba(30,107,255,.9)`});
-  S('results',env(t,25.4,26.8,.35,.4),rise(t,25.4));
-  const rp=eo(seg(t,25.5,26.3));
+  S('clock',env(t,T.nov+.3,T.brk,.4,.4),rise(t,T.nov+.3));
+  S('reporting',env(t,T.nov+.6,T.brk,.4,.4),rise(t,T.nov+.6));
+  $('repN').textContent=Math.round(99*eio(seg(t,T.nov+1.2,T.brk-.2)))+'%';
+
+  // S8 Breaks
+  S('s7a',env(t,T.brk+.1,T.title+.2,.5,.4),rise(t,T.brk+.1));
+  S('s7b',env(t,T.hit-.05,T.title+.2,.08,.4),`scale(${1.35-0.35*expo(seg(t,T.hit-.05,T.hit+.3))})`,{transformOrigin:'left center',color:t>T.hit+.1?'var(--tide-glow)':'var(--bone)',textShadow:`0 0 ${40*seg(t,T.hit,T.hit+.5)}px rgba(30,107,255,.9)`});
+  S('results',env(t,T.hit+.4,T.title+.4,.35,.4),rise(t,T.hit+.4));
+  const rp=eo(seg(t,T.hit+.5,T.hit+1.3));
   $('fT').style.width=(55*rp)+'%';$('fP').style.width=(43*rp)+'%';
   $('pT').textContent=Math.round(55*rp)+'%';$('pP').textContent=Math.round(43*rp)+'%';
-  // flash
-  $('flash').style.opacity=(Math.max(0.9*(1-seg(t,25.0,25.45))*(t>=25?1:0), 0.35*(1-seg(t,9.0,9.35))*(t>=9?1:0), 0.25*(1-seg(t,17.0,17.3))*(t>=17?1:0))).toFixed(3);
-  // S8
-  const tp=seg(t,26.6,27.6);
-  S('title',env(t,26.6,DUR+2,.25,.1),`scale(${1.12-0.12*expo(tp)})`,{filter:`blur(${(1-expo(tp))*20}px)`,letterSpacing:(0.02+0.12*(1-expo(tp)))+'em'});
-  $('title').firstElementChild.style.backgroundPosition=`0 ${100-100*eio(seg(t,26.8,29.4))}%`;
-  S('s8b',env(t,27.9,DUR+2,.8,.1),rise(t,27.9));
-  S('s8c',env(t,29.3,DUR+2,.8,.1)*.9,rise(t,29.3));
+  const fl=(at,amt,len)=>t>=at?amt*(1-seg(t,at,at+len)):0;
+  $('flash').style.opacity=Math.max(fl(T.hit,.9,.45),fl(T.wave,.35,.35),fl(T.stamp,.22,.25),fl(22.5,.25,.3)).toFixed(3);
+
+  // S9 Title
+  const tp=seg(t,T.title+.2,T.title+1.2);
+  S('title',env(t,T.title+.2,DUR+2,.25,.1),`scale(${1.12-0.12*expo(tp)})`,{filter:`blur(${(1-expo(tp))*20}px)`,letterSpacing:(0.02+0.12*(1-expo(tp)))+'em'});
+  $('title').firstElementChild.style.backgroundPosition=`0 ${100-100*eio(seg(t,T.title+.4,T.title+3))}%`;
+  S('s8b',env(t,T.title+1.6,DUR+2,.8,.1),rise(t,T.title+1.6));
+  S('s8c',env(t,T.title+2.8,DUR+2,.8,.1)*.9,rise(t,T.title+2.8));
 }
 
 /* ---- playback ---- */
 const snd=$('snd'),ui=$('ui');let playing=false,raf=0,t0=0,useClock=false;
-function now(){return useClock?(performance.now()-t0)/1000:snd.currentTime}
+const now=()=>useClock?(performance.now()-t0)/1000:snd.currentTime;
 function loop(){const t=now();render(Math.min(t,DUR));if(t<DUR&&playing)raf=requestAnimationFrame(loop);else if(t>=DUR)end()}
 function end(){playing=false;ui.classList.remove('gone');$('play').innerHTML='&#8635;&nbsp; Replay'}
-function start(){cancelAnimationFrame(raf);snd.currentTime=0;playing=true;ui.classList.add('gone');
-  const p=snd.play();useClock=false;
-  if(p&&p.catch)p.catch(()=>{useClock=true;t0=performance.now()});
-  raf=requestAnimationFrame(loop)}
+function start(){cancelAnimationFrame(raf);snd.currentTime=0;playing=true;ui.classList.add('gone');useClock=false;
+  const p=snd.play();if(p&&p.catch)p.catch(()=>{useClock=true;t0=performance.now()});raf=requestAnimationFrame(loop)}
 $('play').addEventListener('click',start);
-addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();if(!playing&&ui.classList.contains('gone')===false){start();return}
-  if(snd.paused){snd.play();playing=true;loop()}else{snd.pause();playing=false}}
+addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();if(!ui.classList.contains('gone')){start();return}
+    if(snd.paused){snd.play();playing=true;loop()}else{snd.pause();playing=false}}
   if(e.key==='r'||e.key==='R')start()});
-// export hook for frame-accurate rendering
-window.__seek=t=>{Math.random=rng(Math.floor(t*30)+1);render(t)};
+window.__seek=t=>render(t);
 window.__hideUI=()=>{ui.style.transition='none';ui.classList.add('gone')};
-// resting frame: the title card, so the page reads complete before playback
-render(29.6);
+render(T.title+3.6); // resting frame: the title card
 })();
 </script>
