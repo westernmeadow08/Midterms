@@ -25,7 +25,6 @@ body{background:var(--void);color:var(--bone);margin:0;overflow:hidden;font-fami
 .layer{position:absolute;inset:0;will-change:opacity,transform}
 .bg{background-size:cover;background-position:center;opacity:0}
 .bg::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 35%,rgba(5,6,10,.85) 100%)}
-#grain{width:100%;height:100%;mix-blend-mode:overlay;opacity:.22;pointer-events:none;image-rendering:pixelated}
 #flash{background:var(--bone);opacity:0;mix-blend-mode:screen}
 .bar{position:absolute;left:0;right:0;height:138px;background:#000;z-index:50}
 #barT{top:0}#barB{bottom:0}
@@ -86,6 +85,18 @@ body{background:var(--void);color:var(--bone);margin:0;overflow:hidden;font-fami
 #tSink .arrow{color:var(--gop);display:inline-block}
 #tAnchor{left:150px;top:650px;width:900px;white-space:normal;font-family:var(--f-voice);font-style:italic;font-size:64px;line-height:1.1}
 
+/* elon scene */
+#elon{opacity:0}
+#eK{left:150px;top:220px}
+#eName{left:142px;top:270px;font-size:210px}
+#eCash{left:142px;top:470px;font-size:250px;color:var(--gop);font-variant-numeric:tabular-nums}
+#eStrike{position:absolute;left:130px;top:575px;height:14px;width:1500px;background:var(--bone);transform-origin:left;transform:scaleX(0) rotate(-3deg);box-shadow:0 0 30px rgba(242,239,232,.6)}
+#eSrc{left:150px;top:740px;font-family:var(--f-data);font-size:18px;letter-spacing:.14em;color:var(--ash);text-transform:uppercase}
+#eEnough{right:150px;top:750px;font-size:88px}
+/* people scene */
+#pp1{top:330px;font-size:190px}
+#pp2{top:560px;font-size:92px}
+
 /* governor cards */
 .vs{position:absolute;inset:0;opacity:0;display:grid;grid-template-columns:1fr 160px 1fr;align-items:center;padding:0 150px}
 .side{display:flex;flex-direction:column;gap:14px}
@@ -131,7 +142,7 @@ body{background:var(--void);color:var(--bone);margin:0;overflow:hidden;font-fami
   background:transparent;border:2px solid var(--bone);padding:18px 44px 16px;cursor:pointer}
 #play:hover,#play:focus-visible{background:var(--bone);color:var(--void);outline:none}
 #hint{position:absolute;bottom:calc(24px + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;font-size:12px;letter-spacing:.2em;color:var(--ash);text-transform:uppercase}
-@media (prefers-reduced-motion:reduce){#grain{display:none}}
+
 </style>
 
 <div id="wrap">
@@ -140,6 +151,7 @@ body{background:var(--void);color:var(--bone);margin:0;overflow:hidden;font-fami
   <div class="layer bg" id="bgWave" style="background-image:url(assets/img/wave.jpg)"></div>
   <div class="layer bg" id="bgCapitol" style="background-image:url(assets/img/capitol.jpg)"></div>
   <div class="layer bg" id="bgBallot" style="background-image:url(assets/img/ballot.jpg)"></div>
+  <div class="layer bg" id="bgPeople" style="background-image:url(assets/img/capitol.jpg)"></div>
   <div class="layer bg" id="bgCrowd" style="background-image:url(assets/img/crowd.jpg)"></div>
 
   <div id="mapWrap"><svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Map of Texas counties" viewBox="0 0 1000 1000" id="texas-map">
@@ -437,6 +449,16 @@ body{background:var(--void);color:var(--bone);margin:0;overflow:hidden;font-fami
     <div class="t" id="tAnchor">His endorsement became an anchor.</div>
   </div>
 
+  <!-- S5b: Elon -->
+  <div class="layer" id="elon">
+    <div class="t kicker" id="eK">The richest man on Earth</div>
+    <div class="t huge" id="eName">Elon Musk</div>
+    <div class="t huge" id="eCash">$<span id="eNum">0</span>+</div>
+    <div id="eStrike"></div>
+    <div class="t" id="eSrc">Spent on the 2026 midterms, mostly backing Paxton · Washington Post / Rolling Stone</div>
+    <div class="t voice" id="eEnough">It wasn&rsquo;t enough.</div>
+  </div>
+
   <!-- S6: Governor -->
   <div class="race t kicker" id="s5k">Governor · Texas</div>
   <div class="vs" id="vsGov">
@@ -449,6 +471,9 @@ body{background:var(--void);color:var(--bone);margin:0;overflow:hidden;font-fami
   <div class="t center kicker" id="s6b" style="top:250px">Election Night · 2026</div>
   <div id="clock"><div class="tm" id="clockT">6:58</div><div class="lb">Polls close · CT</div></div>
   <div id="reporting"><div class="n" id="repN">0%</div><div class="lb">Expected vote in</div></div>
+  <!-- S7b: the people -->
+  <div class="t center huge" id="pp1">The people have spoken.</div>
+  <div class="t center voice" id="pp2">And Texas stood up.</div>
   <!-- S8 -->
   <div class="t voice" id="s7a" style="left:150px;top:280px;font-size:72px">And the wall&hellip;</div>
   <div class="t huge" id="s7b" style="left:150px;top:380px;font-size:250px">Breaks.</div>
@@ -464,18 +489,17 @@ body{background:var(--void);color:var(--bone);margin:0;overflow:hidden;font-fami
   <div class="t center voice" id="s8b" style="top:650px;font-size:68px">The night Texas turned.</div>
   <div class="t center kicker" id="s8c" style="top:770px">A documentary · Coming soon</div>
 
-  <canvas class="layer" id="grain" width="320" height="180"></canvas>
   <div class="layer" id="flash"></div>
   <div class="bar" id="barT"></div><div class="bar" id="barB"></div>
 </div>
 </div>
 
-<div id="ui"><button id="play" type="button">&#9654;&nbsp; Play trailer</button><div id="hint">Sound on · 36 sec · Space to pause · R to restart</div></div>
+<div id="ui"><button id="play" type="button">&#9654;&nbsp; Play trailer</button><div id="hint">Sound on · 47 sec · Space to pause · R to restart</div></div>
 <audio id="snd" src="assets/soundtrack.mp3" preload="auto"></audio>
 
 <script>
 (()=>{
-const DUR=35.8;
+const DUR=47.0;
 const $=id=>document.getElementById(id);
 const stage=$('stage');
 const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
@@ -520,9 +544,6 @@ function waterPath(level,t,amp){
   return [d+'L1020,1020Z',f];
 }
 
-/* ---- grain ---- */
-const g=$('grain'),gx=g.getContext('2d'),gimg=gx.createImageData(320,180);
-function grain(frame){const rr=rng(frame*7919+13);const d=gimg.data;for(let i=0;i<d.length;i+=4){const v=rr()*255;d[i]=d[i+1]=d[i+2]=v;d[i+3]=255}gx.putImageData(gimg,0,0)}
 
 /* ---- helpers ---- */
 const S=(id,o,tf,extra)=>{const e=typeof id==='string'?$(id):id;e.style.opacity=o.toFixed(3);if(tf!==undefined)e.style.transform=tf;if(extra)Object.assign(e.style,extra)};
@@ -531,13 +552,12 @@ const blurIn=(t,a,dur=.8)=>`blur(${(1-eo(seg(t,a,a+dur)))*14}px)`;
 function bg(id,t,a,b,z0=1.08,z1=1.0,pan=0){const o=env(t,a,b,.6,.6);const p=seg(t,a,b);S(id,o,`scale(${z0+(z1-z0)*p}) translateX(${pan*p}px)`)}
 function rules(root,t,a,step){root.querySelectorAll('.rule').forEach((el,i)=>{el.style.transform=`scaleX(${expo(seg(t,a+i*step+.2,a+i*step+1))})`})}
 
-/* Timeline (seconds), locked to the score's hits at 0.5 / 7.75 / 15.25 / 22.5 / 30.0
-   VO: 0.4 wall · 3.8 red · 7.75 water · 10.6 senate · 13.9 trump · 22.4 governor · 25.7 nov 3 · 28.38 breaks(30.0) · 31.3 title */
-const T={wave:7.75,sen:10.5,trump:13.8,stamp:15.25,sink:16.58,anchor:18.82,gov:22.3,nov:25.6,brk:28.3,hit:30.0,title:31.2};
+/* Timeline (seconds), locked to the score's hits every 8 s: 1 / 9 / 17 / 25 / 33 / 41
+   VO: 0.4 wall · 3.8 red · 9.0 water · 12.0 senate · 17.0 trump · 24.4 musk · 30.2 governor · 33.45 nov 3 · 36.1 people · 39.64 breaks(41.0) · 42.6 title */
+const T={wave:9.0,sen:11.9,trump:16.9,stamp:17.1,sink:19.68,anchor:21.92,elon:24.3,cash:25.0,enough:28.97,gov:30.1,nov:33.0,people:36.0,brk:39.5,hit:41.0,title:42.4};
 let shake=0, jit=rng(1);
 function render(t){
   jit=rng(Math.floor(t*30)+1);
-  grain(Math.floor(t*24));
   const bar=138*eo(seg(t,0,1.2))-40*eo(seg(t,T.title,T.title+1));
   $('barT').style.height=$('barB').style.height=Math.max(0,bar)+'px';
 
@@ -545,11 +565,13 @@ function render(t){
   bg('bgPlains',t,3.3,T.wave+.2,1.12,1.0,-40);
   bg('bgWave',t,T.wave-.1,T.sen+.4,1.18,1.04,30);
   bg('bgCapitol',t,T.trump-.2,T.nov+.2,1.05,1.15,0);
-  bg('bgBallot',t,T.nov-.2,T.brk+.3,1.2,1.05,0);
+  bg('bgBallot',t,T.nov-.2,T.people+.3,1.2,1.05,0);
+  bg('bgPeople',t,T.people-.2,T.brk+.3,1.0,1.12,0);
+  $('bgPeople').style.filter=`brightness(${.45+.2*seg(t,T.people,T.people+2)}) saturate(1.1) hue-rotate(-8deg)`;
   bg('bgCrowd',t,T.title-.6,DUR+1,1.15,1.0,0);
   $('bgPlains').style.filter=`brightness(${.55-.25*seg(t,4,T.wave)}) saturate(.9)`;
   $('bgWave').style.filter='brightness(.75)';
-  $('bgCapitol').style.filter=`brightness(${t<T.gov?.22:.42}) saturate(.6)`;
+  $('bgCapitol').style.filter=`brightness(${t<T.elon?.22:t<T.gov?.12:.42}) saturate(.6)`;
   $('bgBallot').style.filter='brightness(.5)';
   $('bgCrowd').style.filter=`brightness(${.35+.25*seg(t,T.title,T.title+2.5)})`;
 
@@ -599,20 +621,31 @@ function render(t){
   S('senK',seg(t,T.sen+.6,T.sen+1.1),rise(t,T.sen+.6));
 
   // S5 Trump
-  $('trump').style.opacity=env(t,T.trump,T.gov,.4,.5);
+  $('trump').style.opacity=env(t,T.trump,T.elon+.2,.4,.4);
   const dIn=eo(seg(t,T.trump,T.trump+.9));
-  const sinkP=eio(seg(t,T.sink,T.gov-.3));
+  const sinkP=eio(seg(t,T.sink,T.elon-.3));
   $('dossier').style.transform=`translate(${(1-dIn)*120}px,${sinkP*60}px) rotate(${2-1*dIn}deg)`;
   $('dossier').querySelector('img').style.filter=`grayscale(${.3+.7*sinkP}) brightness(${.9-.35*sinkP}) contrast(1.1)`;
   $('dossierWater').style.height=(100*eio(seg(t,T.sink+.2,T.anchor+1.4)))+'%';
   const sp=seg(t,T.stamp,T.stamp+.22);
   S('stamp',sp>0?Math.min(1,sp*3)*(1-0.25*sinkP):0,`rotate(-9deg) scale(${1.8-0.8*eo(sp)}) translateY(${sinkP*70}px)`);
   S('tk',env(t,T.trump+.1,T.sink,.5,.35)*.95,rise(t,T.trump+.1));
-  S('tMil',env(t,14.7,T.sink,.25,.35),`scale(${1.15-0.15*eo(seg(t,14.7,15.1))})`,{transformOrigin:'left center',filter:blurIn(t,14.7,.4)});
-  S('tQuote',env(t,15.5,T.sink,.6,.35),rise(t,15.5));
-  S('tSink',env(t,T.sink+.05,T.gov,.4,.45),rise(t,T.sink+.05,.6));
+  S('tMil',env(t,T.trump+.9,T.sink,.25,.35),`scale(${1.15-0.15*eo(seg(t,T.trump+.9,T.trump+1.3))})`,{transformOrigin:'left center',filter:blurIn(t,T.trump+.9,.4)});
+  S('tQuote',env(t,T.trump+1.7,T.sink,.6,.35),rise(t,T.trump+1.7));
+  S('tSink',env(t,T.sink+.05,T.elon+.2,.4,.4),rise(t,T.sink+.05,.6));
   $('tSink').querySelector('.arrow').style.transform=`translateY(${30*eio(seg(t,T.sink+.3,T.sink+1.6))}px)`;
-  S('tAnchor',env(t,T.anchor,T.gov,.6,.45),rise(t,T.anchor,.9));
+  S('tAnchor',env(t,T.anchor,T.elon+.2,.6,.4),rise(t,T.anchor,.9));
+
+  // S5b Musk ($400M+ slams on the 25.0 hit)
+  $('elon').style.opacity=env(t,T.elon,T.gov+.1,.35,.4);
+  S('eK',env(t,T.elon+.1,T.gov+.1,.4,.4)*.95,rise(t,T.elon+.1));
+  S('eName',env(t,T.elon,T.gov+.1,.3,.4),`scale(${1.1-0.1*eo(seg(t,T.elon,T.elon+.5))})`,{transformOrigin:'left center',filter:blurIn(t,T.elon,.5)});
+  const cp2=seg(t,T.cash,T.cash+.25);
+  S('eCash',cp2>0?Math.min(1,cp2*3):0,`scale(${1.45-0.45*eo(cp2)})`,{transformOrigin:'left center',color:t>T.enough?'var(--ash)':'var(--gop)'});
+  $('eNum').textContent=Math.round(400*eo(seg(t,T.cash,T.cash+1.6))).toLocaleString('en-US')+',000,000';
+  S('eSrc',env(t,T.cash+1.0,T.gov+.1,.5,.4),rise(t,T.cash+1.0));
+  $('eStrike').style.transform=`scaleX(${expo(seg(t,T.enough,T.enough+.35))}) rotate(-3deg)`;
+  S('eEnough',env(t,T.enough+.1,T.gov+.1,.5,.4),rise(t,T.enough+.1));
 
   // S6 Governor (hit at 22.5)
   S('s5k',env(t,T.gov+.1,T.nov,.35,.35),rise(t,T.gov+.1));
@@ -623,13 +656,17 @@ function render(t){
   gv.style.transform=`scale(${1+seg(t,T.gov,T.nov)*0.03})`;
 
   // S7 Nov 3
-  S('s6b',env(t,T.nov,T.brk,.4,.4)*.9,rise(t,T.nov));
-  S('s6a',env(t,T.nov+.1,T.brk,.5,.4),`scale(${1.06-0.06*eo(seg(t,T.nov,T.brk))})`);
-  const ck=seg(t,T.nov+.5,T.nov+1.7);const mins=58+Math.floor(ck*2);
+  S('s6b',env(t,T.nov,T.people,.4,.4)*.9,rise(t,T.nov));
+  S('s6a',env(t,T.nov+.1,T.people,.5,.4),`scale(${1.06-0.06*eo(seg(t,T.nov,T.people))})`);
+  const ck=seg(t,T.nov+.9,T.nov+2.1);const mins=58+Math.floor(ck*2);
   $('clockT').textContent=mins>=60?'7:00':'6:'+mins;
-  S('clock',env(t,T.nov+.3,T.brk,.4,.4),rise(t,T.nov+.3));
-  S('reporting',env(t,T.nov+.6,T.brk,.4,.4),rise(t,T.nov+.6));
-  $('repN').textContent=Math.round(99*eio(seg(t,T.nov+1.2,T.brk-.2)))+'%';
+  S('clock',env(t,T.nov+.3,T.people,.4,.4),rise(t,T.nov+.3));
+  S('reporting',env(t,T.nov+.6,T.people,.4,.4),rise(t,T.nov+.6));
+  $('repN').textContent=Math.round(99*eio(seg(t,T.nov+1.2,T.people-.2)))+'%';
+
+  // S7b The people (VO 36.1: spoken 36.1, And Texas 37.57, stood up 38.5)
+  S('pp1',env(t,T.people+.1,T.brk,.5,.35),`scale(${1.06-0.06*eo(seg(t,T.people+.1,T.people+1))})`,{filter:blurIn(t,T.people+.1,.6)});
+  S('pp2',env(t,37.5,T.brk,.5,.35),rise(t,37.5,.8));
 
   // S8 Breaks
   S('s7a',env(t,T.brk+.1,T.title+.2,.5,.4),rise(t,T.brk+.1));
@@ -639,7 +676,7 @@ function render(t){
   $('fT').style.width=(55*rp)+'%';$('fP').style.width=(43*rp)+'%';
   $('pT').textContent=Math.round(55*rp)+'%';$('pP').textContent=Math.round(43*rp)+'%';
   const fl=(at,amt,len)=>t>=at?amt*(1-seg(t,at,at+len)):0;
-  $('flash').style.opacity=Math.max(fl(T.hit,.9,.45),fl(T.wave,.35,.35),fl(T.stamp,.22,.25),fl(22.5,.25,.3)).toFixed(3);
+  $('flash').style.opacity=Math.max(fl(T.hit,.9,.45),fl(T.wave,.35,.35),fl(T.stamp,.22,.25),fl(T.cash,.25,.3),fl(T.nov,.2,.3)).toFixed(3);
 
   // S9 Title
   const tp=seg(t,T.title+.2,T.title+1.2);
