@@ -102,23 +102,34 @@ try{ if(!window.THREE) throw 0; renderer=new THREE.WebGLRenderer({canvas,antiali
 catch(e){ document.getElementById('nogl').hidden=false; return; }
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
-const N=167,FW=1280,FH=720;
+const N=335,FW=1920,FH=1080;
 const lerp=(a,b,t)=>a+(b-a)*t,clamp01=x=>Math.min(1,Math.max(0,x));
 const smooth=(a,b,x)=>{const t=clamp01((x-a)/(b-a));return t*t*(3-2*t);};
 
-/* ---------- frames: load coarse to fine so scrubbing works early ---------- */
-const imgs=new Array(N),ready=new Uint8Array(N);let loaded=0;
+/* ---------- frames ----------
+   Compressed frames are fetched coarse to fine so scrubbing works early. Only a few
+   around the playhead are kept decoded, so 335 full-HD frames never sit in memory at once. */
+const STEP=(Math.min(innerWidth,innerHeight)<700||(navigator.deviceMemory&&navigator.deviceMemory<=4))?2:1;   /* phones take every other frame */
+const blobs=new Array(N),ready=new Uint8Array(N);let loaded=0,total=0;
 const loadEl=document.getElementById('load');
-const order=[];(function(){const seen=new Uint8Array(N);for(const step of[16,8,4,2,1])for(let i=0;i<N;i+=step)if(!seen[i]){seen[i]=1;order.push(i);}})();
+const order=[];(function(){const seen=new Uint8Array(N);for(const step of[32,16,8,4,2,1]){if(step<STEP)break;for(let i=0;i<N;i+=step)if(!seen[i]){seen[i]=1;order.push(i);}}})();
+total=order.length;
 let next=0,active=0;
-function pump(){while(active<6&&next<order.length){const i=order[next++];active++;const im=new Image();im.decoding='async';
-  im.onload=()=>{ready[i]=1;imgs[i]=im;loaded++;active--;dirty=true;loadEl.textContent=loaded<N?'Loading '+Math.round(loaded/N*100)+'%':'';pump();};
-  im.onerror=()=>{active--;pump();};im.src='frames/f'+('00'+i).slice(-3)+'.webp';}}
+function pump(){while(active<6&&next<order.length){const i=order[next++];active++;
+  fetch('frames/f'+('00'+i).slice(-3)+'.webp').then(r=>{if(!r.ok)throw 0;return r.blob();}).then(b=>{blobs[i]=b;ready[i]=1;loaded++;dirty=true;loadEl.textContent=loaded<total?'Loading '+Math.round(loaded/total*100)+'%':'';})
+  .catch(()=>{}).then(()=>{active--;pump();});}}
 pump();
 function nearest(i){if(ready[i])return i;for(let d=1;d<N;d++){if(i-d>=0&&ready[i-d])return i-d;if(i+d<N&&ready[i+d])return i+d;}return -1;}
+const cache=new Map(),pending=new Set(),KEEP=14;
+function decode(i,center){if(i<0||i>=N||!ready[i]||cache.has(i)||pending.has(i)||pending.size>3)return;pending.add(i);
+  createImageBitmap(blobs[i]).then(bm=>{cache.set(i,bm);dirty=true;
+    if(cache.size>KEEP){let far=-1,fd=-1;cache.forEach((v,key)=>{const d=Math.abs(key-playhead);if(key!==shown&&d>fd){fd=d;far=key;}});if(far>=0){const o=cache.get(far);cache.delete(far);if(o.close)o.close();}}
+  }).catch(()=>{}).then(()=>pending.delete(i));}
+function bestCached(i){let best=-1,bd=1e9;cache.forEach((v,key)=>{const d=Math.abs(key-i);if(d<bd){bd=d;best=key;}});return best;}
+let playhead=0;
 
 /* ---------- one full-screen quad, graded in the shader ---------- */
-const tex=new THREE.Texture();tex.minFilter=THREE.LinearMipmapLinearFilter;tex.magFilter=THREE.LinearFilter;tex.generateMipmaps=true;
+const tex=new THREE.Texture();tex.flipY=false;tex.minFilter=THREE.LinearMipmapLinearFilter;tex.magFilter=THREE.LinearFilter;tex.generateMipmaps=true;
 const U={t:{value:tex},k:{value:0},hy:{value:.78},pan:{value:0},time:{value:0},scale:{value:new THREE.Vector2(1,1)}};
 const scene=new THREE.Scene(),cam=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
 scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({uniforms:U,depthTest:false,
@@ -127,8 +138,8 @@ scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({
   float h21(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
   float mxc(vec3 c){return max(c.r,max(c.g,c.b));}float mnc(vec3 c){return min(c.r,min(c.g,c.b));}
   void main(){
-    vec2 uv=(vUv-.5)*scale+.5;
-    vec3 c=texture2D(t,uv).rgb,b3=texture2D(t,uv,3.5).rgb,b5=texture2D(t,uv,5.5).rgb;
+    vec2 uv=(vUv-.5)*scale+.5,tu=vec2(uv.x,1.-uv.y);   /* bitmaps arrive top-down */
+    vec3 c=texture2D(t,tu).rgb,b3=texture2D(t,tu,4.).rgb,b5=texture2D(t,tu,6.).rgb;
     float mx=mxc(c),mn=mnc(c),sat=mx-mn,lum=dot(c,vec3(.299,.587,.114));
     float sky=smoothstep(hy-.012,hy+.022,uv.y);
     /* what is a lamp: bright and coloured, or clipped white. The sky needs a stricter test because sunset cloud is bright too */
@@ -147,7 +158,7 @@ scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({
     night+=vec3(.85,.9,1.)*star*sky*(1.-lamp)*smoothstep(.02,.16,uv.y-hy)*smoothstep(.3,.55,lum);
     vec3 o=mix(c,night,k);
     vec2 d=vUv-.5;o*=1.-dot(d,d)*(.35+.5*k);
-    o+=(h21(vUv*vec2(1300.,740.)+time)-.5)*.025;
+    o+=(h21(vUv*vec2(1300.,740.)+time)-.5)*.02;
     gl_FragColor=vec4(o,1.);}`})));
 
 function resize(){const w=canvas.clientWidth||innerWidth,h=canvas.clientHeight||innerHeight;renderer.setSize(w,h,false);
@@ -164,8 +175,10 @@ function frame(){
   requestAnimationFrame(frame);
   const dt=Math.min(clock.getDelta(),.05);T+=dt;
   const prev=p;p+=(target-p)*(reduce?1:Math.min(1,dt*5));if(Math.abs(p-prev)>1e-5)dirty=true;
-  const k=smooth(.04,.92,p),want=nearest(Math.round(p*(N-1)));
-  if(want>=0&&want!==shown){tex.image=imgs[want];tex.needsUpdate=true;shown=want;dirty=true;}
+  const k=smooth(.04,.92,p),want=nearest(Math.round(p*(N-1))),dir=target>=p?1:-1;
+  if(want>=0){playhead=want;decode(want);for(let j=1;j<=4;j++)decode(nearest(Math.min(N-1,Math.max(0,want+dir*j*STEP))));
+    const show=cache.has(want)?want:bestCached(want);
+    if(show>=0&&show!==shown){tex.image=cache.get(show);tex.needsUpdate=true;shown=show;dirty=true;}}
   if(shown<0)return;
   if(k>.02&&!reduce)dirty=true;            /* stars twinkle and grain moves once it is getting dark */
   if(!dirty)return;dirty=false;
