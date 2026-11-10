@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>Midway Drone Lap</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Monoton&family=Barlow+Condensed:wght@400;500;600&display=swap">
+<style>
+/* Layout: one fixed full-screen 3D fairground; short copy beats scroll over it, alternating sides, and the page's scroll position is the drone's flight path and the clock. */
+:root{
+  color-scheme:dark;
+  --ink:#fff6ea;            /* marquee-bulb white */
+  --ink-dim:#e9d6cf;
+  --night:#07061a;          /* sky after dark */
+  --neon:#ff4fb0;           /* swing-arm magenta */
+  --bulb:#ffc960;           /* booth bulb amber */
+  --scrim:rgba(7,6,26,.72);
+  --display:"Monoton","Impact","Haettenschweiler",fantasy;
+  --text:"Barlow Condensed","Arial Narrow","Helvetica Neue",Arial,sans-serif;
+}
+html{scroll-behavior:auto}
+body{background:var(--night);color:var(--ink);font-family:var(--text);font-size:1.25rem;line-height:1.35;overflow-x:hidden}
+#sky{position:fixed;inset:0;width:100%;height:100%;display:block;
+  background:linear-gradient(#55698f,#d99a8c 55%,#f6b775 68%,#2a2420 69%)}
+.scrim{position:fixed;inset:auto 0 0 0;height:55%;pointer-events:none;
+  background:linear-gradient(to top,var(--scrim),rgba(7,6,26,0))}
+.hud{position:fixed;top:0;right:0;z-index:3;display:flex;gap:.6em;align-items:baseline;
+  padding:calc(14px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 0 0;
+  font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:.95rem;
+  font-variant-numeric:tabular-nums;text-shadow:0 1px 10px rgba(0,0,0,.7)}
+.hud #phase{color:var(--bulb)}
+main{position:relative;z-index:2;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+section{min-height:130vh;display:flex;align-items:flex-end;padding-block:0 14vh;max-width:1200px;margin:0 auto}
+section:first-child{min-height:100vh;min-height:100svh;padding-block:0 9vh}
+section.r{justify-content:flex-end;text-align:right}
+section:last-child{min-height:100vh;min-height:100svh}
+.beat{max-width:26em;display:flex;flex-direction:column;gap:.5em;text-shadow:0 2px 18px rgba(0,0,0,.85),0 0 2px rgba(0,0,0,.6)}
+.eyebrow{font-weight:600;font-size:.95rem;letter-spacing:.2em;text-transform:uppercase;color:var(--bulb)}
+h1,h2{margin:0;font-weight:400;text-wrap:balance}
+h1{font-family:var(--display);font-size:clamp(2.6rem,9.5vw,7rem);line-height:1.02;letter-spacing:.02em;
+  text-shadow:0 0 22px rgba(255,79,176,.75),0 0 60px rgba(255,79,176,.45),0 3px 14px rgba(0,0,0,.6)}
+h2{font-family:var(--text);font-weight:600;font-size:clamp(1.9rem,4.6vw,3.1rem);line-height:1.05;text-transform:uppercase;letter-spacing:.03em}
+p{margin:0;color:var(--ink-dim);text-wrap:pretty}
+.hint{display:inline-flex;align-items:center;gap:.6em;margin-top:.6em;font-size:.95rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase}
+.hint i{width:1px;height:2.2em;background:var(--ink);transform-origin:top;animation:drop 1.8s ease-in-out infinite}
+@keyframes drop{0%{transform:scaleY(0)}55%{transform:scaleY(1)}100%{transform:scaleY(1);opacity:0}}
+@media (prefers-reduced-motion:reduce){.hint i{animation:none}}
+#nogl{position:fixed;left:0;right:0;top:40%;text-align:center;z-index:4;padding:0 16px}
+</style>
+
+<canvas id="sky" aria-label="Drone footage circling a county fair at sunset. Scrolling plays the flight while the picture is graded from sunset to night."></canvas>
+<div class="scrim"></div>
+<div class="hud" aria-hidden="true"><span id="load"></span><span id="clock">7:41 PM</span><span id="phase">Sunset</span></div>
+<p id="nogl" hidden>This page needs WebGL to grade the footage. Try a different browser.</p>
+
+<main>
+  <section>
+    <div class="beat">
+      <span class="eyebrow">County fair, last light</span>
+      <h1>Midway After Dark</h1>
+      <p>One slow lap around the fairgrounds, from sunset to full neon.</p>
+      <span class="hint"><i></i>Scroll to fly</span>
+    </div>
+  </section>
+  <section class="r">
+    <div class="beat">
+      <span class="eyebrow">Golden hour</span>
+      <h2>The sun slips behind the wheel</h2>
+      <p>The sky goes peach, then pink. Every ride is already lit and turning.</p>
+    </div>
+  </section>
+  <section>
+    <div class="beat">
+      <span class="eyebrow">Dusk</span>
+      <h2>The bulbs take over</h2>
+      <p>The field turns blue and the swing arm keeps chasing colors, ring by ring.</p>
+    </div>
+  </section>
+  <section class="r">
+    <div class="beat">
+      <span class="eyebrow">Nightfall</span>
+      <h2>Stars up, floodlights on</h2>
+      <p>Funnel cakes, lemonade, corn dogs. The booths glow brighter than the sky.</p>
+    </div>
+  </section>
+  <section>
+    <div class="beat">
+      <span class="eyebrow">After dark</span>
+      <h2>Nothing left but neon</h2>
+      <p>That is the full lap. Scroll back up to bring the sun back.</p>
+    </div>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+'use strict';
+const canvas=document.getElementById('sky');
+let renderer;
+try{ if(!window.THREE) throw 0; renderer=new THREE.WebGLRenderer({canvas,antialias:false,powerPreference:'high-performance'}); }
+catch(e){ document.getElementById('nogl').hidden=false; return; }
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+const N=167,FW=1280,FH=720;
+const lerp=(a,b,t)=>a+(b-a)*t,clamp01=x=>Math.min(1,Math.max(0,x));
+const smooth=(a,b,x)=>{const t=clamp01((x-a)/(b-a));return t*t*(3-2*t);};
+
+/* ---------- frames: load coarse to fine so scrubbing works early ---------- */
+const imgs=new Array(N),ready=new Uint8Array(N);let loaded=0;
+const loadEl=document.getElementById('load');
+const order=[];(function(){const seen=new Uint8Array(N);for(const step of[16,8,4,2,1])for(let i=0;i<N;i+=step)if(!seen[i]){seen[i]=1;order.push(i);}})();
+let next=0,active=0;
+function pump(){while(active<6&&next<order.length){const i=order[next++];active++;const im=new Image();im.decoding='async';
+  im.onload=()=>{ready[i]=1;imgs[i]=im;loaded++;active--;dirty=true;loadEl.textContent=loaded<N?'Loading '+Math.round(loaded/N*100)+'%':'';pump();};
+  im.onerror=()=>{active--;pump();};im.src='frames/f'+('00'+i).slice(-3)+'.webp';}}
+pump();
+function nearest(i){if(ready[i])return i;for(let d=1;d<N;d++){if(i-d>=0&&ready[i-d])return i-d;if(i+d<N&&ready[i+d])return i+d;}return -1;}
+
+/* ---------- one full-screen quad, graded in the shader ---------- */
+const tex=new THREE.Texture();tex.minFilter=THREE.LinearMipmapLinearFilter;tex.magFilter=THREE.LinearFilter;tex.generateMipmaps=true;
+const U={t:{value:tex},k:{value:0},hy:{value:.78},pan:{value:0},time:{value:0},scale:{value:new THREE.Vector2(1,1)}};
+const scene=new THREE.Scene(),cam=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({uniforms:U,depthTest:false,
+  vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}',
+  fragmentShader:`varying vec2 vUv;uniform sampler2D t;uniform float k,hy,pan,time;uniform vec2 scale;
+  float h21(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+  float mxc(vec3 c){return max(c.r,max(c.g,c.b));}float mnc(vec3 c){return min(c.r,min(c.g,c.b));}
+  void main(){
+    vec2 uv=(vUv-.5)*scale+.5;
+    vec3 c=texture2D(t,uv).rgb,b3=texture2D(t,uv,3.5).rgb,b5=texture2D(t,uv,5.5).rgb;
+    float mx=mxc(c),mn=mnc(c),sat=mx-mn,lum=dot(c,vec3(.299,.587,.114));
+    float sky=smoothstep(hy-.012,hy+.022,uv.y);
+    /* what is a lamp: bright and coloured, or clipped white. The sky needs a stricter test because sunset cloud is bright too */
+    float lampG=smoothstep(.55,.9,mx)*smoothstep(.16,.42,sat)+smoothstep(.86,1.,mn);
+    float lampS=smoothstep(.5,.8,mx)*smoothstep(.5,.72,sat)+smoothstep(.965,1.,mn);
+    float lamp=clamp(mix(lampG,lampS,sky),0.,1.);
+    vec3 tint=mix(vec3(.12,.15,.29),vec3(.03,.04,.10),sky);
+    vec3 night=c*tint*(1.+2.2*smoothstep(.45,.95,lum)*(1.-sky));
+    night+=c*lamp*1.1;
+    float s3=mxc(b3)-mnc(b3),g3=smoothstep(.42,.8,mxc(b3))*smoothstep(.14+.4*sky,.4+.4*sky,s3);
+    float s5=mxc(b5)-mnc(b5),g5=smoothstep(.38,.7,mxc(b5))*smoothstep(.12+.45*sky,.34+.45*sky,s5);
+    night+=b3*g3*.45+b5*g5*.3;
+    /* stars drift with the orbit */
+    vec2 sp=vec2(uv.x*scale.y/scale.x*1.78+pan,uv.y)*260.;vec2 id=floor(sp),f=fract(sp)-.5;float r=h21(id);
+    float star=step(.993,r)*smoothstep(.3,0.,length(f))*(.6+.4*sin(time*2.+r*90.));
+    night+=vec3(.85,.9,1.)*star*sky*(1.-lamp)*smoothstep(.02,.16,uv.y-hy)*smoothstep(.3,.55,lum);
+    vec3 o=mix(c,night,k);
+    vec2 d=vUv-.5;o*=1.-dot(d,d)*(.35+.5*k);
+    o+=(h21(vUv*vec2(1300.,740.)+time)-.5)*.025;
+    gl_FragColor=vec4(o,1.);}`})));
+
+function resize(){const w=canvas.clientWidth||innerWidth,h=canvas.clientHeight||innerHeight;renderer.setSize(w,h,false);
+  const a=w/h,fa=FW/FH;if(a>fa)U.scale.value.set(1,fa/a);else U.scale.value.set(a/fa,1);dirty=true;}
+let dirty=true;addEventListener('resize',resize);resize();
+
+/* ---------- scroll drives the frame and the clock ---------- */
+let target=0,p=0,shown=-1;
+function readScroll(){const max=document.documentElement.scrollHeight-innerHeight;target=max>0?clamp01(scrollY/max):0;}
+addEventListener('scroll',readScroll,{passive:true});readScroll();p=target;
+const clockEl=document.getElementById('clock'),phaseEl=document.getElementById('phase');let lastClock='';
+const clock=new THREE.Clock();let T=0;
+function frame(){
+  requestAnimationFrame(frame);
+  const dt=Math.min(clock.getDelta(),.05);T+=dt;
+  const prev=p;p+=(target-p)*(reduce?1:Math.min(1,dt*5));if(Math.abs(p-prev)>1e-5)dirty=true;
+  const k=smooth(.04,.92,p),want=nearest(Math.round(p*(N-1)));
+  if(want>=0&&want!==shown){tex.image=imgs[want];tex.needsUpdate=true;shown=want;dirty=true;}
+  if(shown<0)return;
+  if(k>.02&&!reduce)dirty=true;            /* stars twinkle and grain moves once it is getting dark */
+  if(!dirty)return;dirty=false;
+  U.k.value=k;U.hy.value=1-lerp(.222,.24,p);U.pan.value=p*1.6;U.time.value=T%60;
+  renderer.render(scene,cam);
+  const mins=Math.round(lerp(19*60+41,21*60+24,k)),hh=((mins/60|0)+11)%12+1,mm=('0'+mins%60).slice(-2),txt=hh+':'+mm+' PM';
+  if(txt!==lastClock){lastClock=txt;clockEl.textContent=txt;phaseEl.textContent=k<.3?'Sunset':k<.62?'Dusk':k<.88?'Nightfall':'After dark';}
+}
+frame();
+})();
+</script>
