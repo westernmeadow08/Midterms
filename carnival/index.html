@@ -446,7 +446,7 @@ function bakeEnv(){scene.remove(sky);envScene.add(sky);const rt=pmrem.fromScene(
 
 /* ---------- booths and carousel generated from the footage ---------- */
 if(THREE.GLTFLoader){const loader=new THREE.GLTFLoader(),cache={};
-  ['corndog','treats','carousel'].forEach(name=>loader.load('models/'+name+'.glb',gltf=>{
+  ['corndog','treats','carousel'].forEach(name=>loader.load('models/'+name+'.json',gltf=>{
     const src=gltf.scene;src.traverse(o=>{if(o.isMesh){o.castShadow=o.receiveShadow=true;const m=o.material;if(m.map){m.emissive=new THREE.Color(0xffffff);m.emissiveMap=m.map;m.userData.e=.5;m.emissiveIntensity=.5;lit.push(m);}m.metalness=0;m.roughness=.75;pbr.push(m);}});
     const bb=new THREE.Box3().setFromObject(src),sz=bb.getSize(new THREE.Vector3()),ctr=bb.getCenter(new THREE.Vector3());
     slots.filter(s=>s.model===name).forEach(s=>{const k=s.w/Math.max(sz.x,sz.z),m=src.clone();m.scale.setScalar(k);m.position.set(-ctr.x*k,-bb.min.y*k,-ctr.z*k);
