@@ -48,17 +48,17 @@ p{margin:0;color:var(--ink-dim);text-wrap:pretty}
 #nogl{position:fixed;left:0;right:0;top:40%;text-align:center;z-index:4;padding:0 16px}
 </style>
 
-<canvas id="sky" aria-label="Drone footage circling a county fair at sunset. Scrolling plays the flight while the picture is graded from sunset to night."></canvas>
+<canvas id="sky" aria-label="Drone footage circling a county fair at sunset. Scrolling plays the flight."></canvas>
 <div class="scrim"></div>
-<div class="hud" aria-hidden="true"><span id="load"></span><span id="clock">7:41 PM</span><span id="phase">Sunset</span></div>
+<div class="hud" aria-hidden="true"><span id="load"></span></div>
 <p id="nogl" hidden>This page needs WebGL to grade the footage. Try a different browser.</p>
 
 <main>
   <section>
     <div class="beat">
       <span class="eyebrow">County fair, last light</span>
-      <h1>Midway After Dark</h1>
-      <p>One slow lap around the fairgrounds, from sunset to full neon.</p>
+      <h1>Midway at Sunset</h1>
+      <p>One slow lap around the fairgrounds in the last light of the day.</p>
       <span class="hint"><i></i>Scroll to fly</span>
     </div>
   </section>
@@ -66,28 +66,28 @@ p{margin:0;color:var(--ink-dim);text-wrap:pretty}
     <div class="beat">
       <span class="eyebrow">Golden hour</span>
       <h2>The sun slips behind the wheel</h2>
-      <p>The sky goes peach, then pink. Every ride is already lit and turning.</p>
+      <p>The sky is peach and pink. Every ride is already lit and turning.</p>
     </div>
   </section>
   <section>
     <div class="beat">
-      <span class="eyebrow">Dusk</span>
-      <h2>The bulbs take over</h2>
-      <p>The field turns blue and the swing arm keeps chasing colors, ring by ring.</p>
+      <span class="eyebrow">The swing arm</span>
+      <h2>Chasing colors, ring by ring</h2>
+      <p>Green, then red, then blue, all the way up the arm and back down.</p>
     </div>
   </section>
   <section class="r">
     <div class="beat">
-      <span class="eyebrow">Nightfall</span>
-      <h2>Stars up, floodlights on</h2>
-      <p>Funnel cakes, lemonade, corn dogs. The booths glow brighter than the sky.</p>
+      <span class="eyebrow">The midway</span>
+      <h2>Funnel cakes and corn dogs</h2>
+      <p>Spiral spuds, chicken on a stick, hot dogs. The booths are lit and the lines are forming.</p>
     </div>
   </section>
   <section>
     <div class="beat">
-      <span class="eyebrow">After dark</span>
-      <h2>Nothing left but neon</h2>
-      <p>That is the full lap. Scroll back up to bring the sun back.</p>
+      <span class="eyebrow">Last look</span>
+      <h2>End of the flight</h2>
+      <p>That is the whole flight. Scroll back up to fly it again.</p>
     </div>
   </section>
 </main>
@@ -128,64 +128,39 @@ function decode(i,center){if(i<0||i>=N||!ready[i]||cache.has(i)||pending.has(i)|
 function bestCached(i){let best=-1,bd=1e9;cache.forEach((v,key)=>{const d=Math.abs(key-i);if(d<bd){bd=d;best=key;}});return best;}
 let playhead=0;
 
-/* ---------- one full-screen quad, graded in the shader ---------- */
-const tex=new THREE.Texture();tex.flipY=false;tex.minFilter=THREE.LinearMipmapLinearFilter;tex.magFilter=THREE.LinearFilter;tex.generateMipmaps=true;
-const U={t:{value:tex},k:{value:0},hy:{value:.78},pan:{value:0},time:{value:0},scale:{value:new THREE.Vector2(1,1)}};
+/* ---------- one full-screen quad showing the current frame ---------- */
+const tex=new THREE.Texture();tex.flipY=false;tex.minFilter=THREE.LinearFilter;tex.magFilter=THREE.LinearFilter;tex.generateMipmaps=false;
+const U={t:{value:tex},scale:{value:new THREE.Vector2(1,1)}};
 const scene=new THREE.Scene(),cam=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
 scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({uniforms:U,depthTest:false,
   vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}',
-  fragmentShader:`varying vec2 vUv;uniform sampler2D t;uniform float k,hy,pan,time;uniform vec2 scale;
-  float h21(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
-  float mxc(vec3 c){return max(c.r,max(c.g,c.b));}float mnc(vec3 c){return min(c.r,min(c.g,c.b));}
+  fragmentShader:`varying vec2 vUv;uniform sampler2D t;uniform vec2 scale;
   void main(){
     vec2 uv=(vUv-.5)*scale+.5,tu=vec2(uv.x,1.-uv.y);   /* bitmaps arrive top-down */
-    vec3 c=texture2D(t,tu).rgb,b3=texture2D(t,tu,4.).rgb,b5=texture2D(t,tu,6.).rgb;
-    float mx=mxc(c),mn=mnc(c),sat=mx-mn,lum=dot(c,vec3(.299,.587,.114));
-    float sky=smoothstep(hy-.012,hy+.022,uv.y);
-    /* what is a lamp: bright and coloured, or clipped white. The sky needs a stricter test because sunset cloud is bright too */
-    float lampG=smoothstep(.55,.9,mx)*smoothstep(.16,.42,sat)+smoothstep(.86,1.,mn);
-    float lampS=smoothstep(.5,.8,mx)*smoothstep(.5,.72,sat)+smoothstep(.965,1.,mn);
-    float lamp=clamp(mix(lampG,lampS,sky),0.,1.);
-    vec3 tint=mix(vec3(.12,.15,.29),vec3(.03,.04,.10),sky);
-    vec3 night=c*tint*(1.+2.2*smoothstep(.45,.95,lum)*(1.-sky));
-    night+=c*lamp*1.1;
-    float s3=mxc(b3)-mnc(b3),g3=smoothstep(.42,.8,mxc(b3))*smoothstep(.14+.4*sky,.4+.4*sky,s3);
-    float s5=mxc(b5)-mnc(b5),g5=smoothstep(.38,.7,mxc(b5))*smoothstep(.12+.45*sky,.34+.45*sky,s5);
-    night+=b3*g3*.45+b5*g5*.3;
-    /* stars drift with the orbit */
-    vec2 sp=vec2(uv.x*scale.y/scale.x*1.78+pan,uv.y)*260.;vec2 id=floor(sp),f=fract(sp)-.5;float r=h21(id);
-    float star=step(.993,r)*smoothstep(.3,0.,length(f))*(.6+.4*sin(time*2.+r*90.));
-    night+=vec3(.85,.9,1.)*star*sky*(1.-lamp)*smoothstep(.02,.16,uv.y-hy)*smoothstep(.3,.55,lum);
-    vec3 o=mix(c,night,k);
-    vec2 d=vUv-.5;o*=1.-dot(d,d)*(.35+.5*k);
-    o+=(h21(vUv*vec2(1300.,740.)+time)-.5)*.02;
+    vec3 o=texture2D(t,tu).rgb;
+    vec2 d=vUv-.5;o*=1.-dot(d,d)*.3;
     gl_FragColor=vec4(o,1.);}`})));
 
 function resize(){const w=canvas.clientWidth||innerWidth,h=canvas.clientHeight||innerHeight;renderer.setSize(w,h,false);
   const a=w/h,fa=FW/FH;if(a>fa)U.scale.value.set(1,fa/a);else U.scale.value.set(a/fa,1);dirty=true;}
 let dirty=true;addEventListener('resize',resize);resize();
 
-/* ---------- scroll drives the frame and the clock ---------- */
+/* ---------- scroll drives the frame ---------- */
 let target=0,p=0,shown=-1;
 function readScroll(){const max=document.documentElement.scrollHeight-innerHeight;target=max>0?clamp01(scrollY/max):0;}
 addEventListener('scroll',readScroll,{passive:true});readScroll();p=target;
-const clockEl=document.getElementById('clock'),phaseEl=document.getElementById('phase');let lastClock='';
 const clock=new THREE.Clock();let T=0;
 function frame(){
   requestAnimationFrame(frame);
   const dt=Math.min(clock.getDelta(),.05);T+=dt;
   const prev=p;p+=(target-p)*(reduce?1:Math.min(1,dt*5));if(Math.abs(p-prev)>1e-5)dirty=true;
-  const k=smooth(.04,.92,p),want=nearest(Math.round(p*(N-1))),dir=target>=p?1:-1;
+  const want=nearest(Math.round(p*(N-1))),dir=target>=p?1:-1;
   if(want>=0){playhead=want;decode(want);for(let j=1;j<=4;j++)decode(nearest(Math.min(N-1,Math.max(0,want+dir*j*STEP))));
     const show=cache.has(want)?want:bestCached(want);
     if(show>=0&&show!==shown){tex.image=cache.get(show);tex.needsUpdate=true;shown=show;dirty=true;}}
   if(shown<0)return;
-  if(k>.02&&!reduce)dirty=true;            /* stars twinkle and grain moves once it is getting dark */
   if(!dirty)return;dirty=false;
-  U.k.value=k;U.hy.value=1-lerp(.222,.24,p);U.pan.value=p*1.6;U.time.value=T%60;
   renderer.render(scene,cam);
-  const mins=Math.round(lerp(19*60+41,21*60+24,k)),hh=((mins/60|0)+11)%12+1,mm=('0'+mins%60).slice(-2),txt=hh+':'+mm+' PM';
-  if(txt!==lastClock){lastClock=txt;clockEl.textContent=txt;phaseEl.textContent=k<.3?'Sunset':k<.62?'Dusk':k<.88?'Nightfall':'After dark';}
 }
 frame();
 })();
