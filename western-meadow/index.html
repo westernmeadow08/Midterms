@@ -107,6 +107,28 @@ section{padding-block:clamp(64px,9vw,120px)}
 .s-clean{background-image:repeating-linear-gradient(45deg,var(--turf) 0 2px,transparent 2px 9px),repeating-linear-gradient(-45deg,var(--turf) 0 2px,transparent 2px 9px)}
 .svc:hover .s-clean{background-position:9px 0}
 
+/* ---------- photos ---------- */
+.photos{padding-block:0 clamp(64px,9vw,120px)}
+.shots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.shot{position:relative;margin:0;overflow:hidden;border-radius:4px;background:var(--lawn-rough);aspect-ratio:4/3;max-width:100%}
+.shot.wide{grid-column:1/-1;aspect-ratio:16/8}
+.shot img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 1.2s cubic-bezier(.2,.8,.2,1)}
+.shot.wide img{animation:pan 24s ease-in-out infinite alternate}
+@keyframes pan{from{transform:scale(1.02)}to{transform:scale(1.12) translate(-1.5%,-1.5%)}}
+.shot:hover img{transform:scale(1.07)}
+.shot figcaption{position:absolute;left:12px;bottom:12px;background:rgba(8,36,16,.78);color:var(--on-lawn);padding:7px 10px;border-radius:3px}
+
+/* ---------- reach us ---------- */
+.reach{display:grid;gap:14px;margin-top:8px}
+.reach div{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.reach a{text-decoration:none;user-select:all}
+.reach .ph{font:900 clamp(38px,5vw,56px)/1 var(--display);letter-spacing:.02em;color:var(--marigold)}
+.reach .em{font-size:19px;font-weight:600;overflow-wrap:anywhere}
+.copy{font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--on-lawn);background:rgba(8,36,16,.55);border:1px solid rgba(255,255,255,.5);border-radius:3px;padding:8px 10px;cursor:pointer}
+.copy:hover{background:rgba(8,36,16,.85)}
+.nav-tel{font:700 20px/1 var(--display);letter-spacing:.05em;text-decoration:none;white-space:nowrap}
+.nav-end{display:flex;align-items:center;gap:20px}
+
 /* ---------- seasons ---------- */
 .year{background:var(--surface);border-block:1px solid var(--line)}
 .year-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(28px,5vw,72px);align-items:start}
@@ -160,6 +182,11 @@ footer .brand{color:var(--fg);font-size:18px}
   .steps{grid-template-columns:repeat(2,minmax(0,1fr))}
   .nav ul{display:none}
 }
+@media (max-width:700px){
+  .nav-tel{display:none}
+  .shots{grid-template-columns:minmax(0,1fr)}
+  .shot.wide{aspect-ratio:4/3}
+}
 @media (max-width:560px){
   .services,.steps,.two{grid-template-columns:minmax(0,1fr)}
   .plan-note{position:static;margin:0 var(--gut-r) 16px var(--gut-l);width:fit-content}
@@ -184,7 +211,10 @@ footer .brand{color:var(--fg);font-size:18px}
       <li><a href="#year">The year</a></li>
       <li><a href="#start">Getting started</a></li>
     </ul>
-    <a class="btn btn-go" href="#contact">Request a site walk</a>
+    <div class="nav-end">
+      <a class="nav-tel" href="tel:+13614425084">361-442-5084</a>
+      <a class="btn btn-go" href="#contact">Request a site walk</a>
+    </div>
   </nav>
   <div class="wrap">
     <div class="hero-body">
@@ -219,6 +249,15 @@ footer .brand{color:var(--fg);font-size:18px}
       <article class="svc rv"><div class="sym s-tree"></div><div><h3>Trees &amp; shrubs</h3><p>Pruning for shape, sightlines and clearance over walks, drives and signage.</p></div></article>
       <article class="svc rv"><div class="sym s-clean"></div><div><h3>Seasonal cleanups</h3><p>Leaf removal, storm debris and litter pickup, so the site looks cared for between growing seasons too.</p></div></article>
     </div>
+  </div>
+</section>
+
+<section class="photos" aria-label="What well-kept grounds look like">
+  <div class="wrap shots">
+    <figure class="shot wide rv"><img src="img/aerial.jpg" alt="Office building with a striped lawn, live oaks and planted beds"><figcaption class="tag">Striped turf</figcaption></figure>
+    <figure class="shot rv"><img src="img/edge.jpg" alt="Crisp lawn edge along a sidewalk at a retail center" loading="lazy"><figcaption class="tag">Clean edges</figcaption></figure>
+    <figure class="shot rv"><img src="img/beds.jpg" alt="Entry bed with seasonal flowers, fresh mulch and pruned shrubs" loading="lazy"><figcaption class="tag">Entry beds</figcaption></figure>
+    <figure class="shot rv"><img src="img/water.jpg" alt="Sprinklers running on a commercial lawn at sunrise" loading="lazy"><figcaption class="tag">Irrigation</figcaption></figure>
   </div>
 </section>
 
@@ -257,7 +296,11 @@ footer .brand{color:var(--fg);font-size:18px}
     <div class="intro rv">
       <p class="tag">Free for commercial properties</p>
       <h2>Let’s walk your property</h2>
-      <p>Tell us about the site. We’ll set up a walk-through and follow with a written scope and price.</p>
+      <p>Tell us about the site. We’ll set up a walk-through and follow with a written scope and price. Or call or email us directly.</p>
+      <div class="reach">
+        <div><a class="ph" href="tel:+13614425084">361-442-5084</a><button class="copy" type="button" id="copy-ph" data-copy="361-442-5084">Copy</button></div>
+        <div><a class="em" href="mailto:westernmeadow@gmail.com">westernmeadow@gmail.com</a><button class="copy" type="button" id="copy-em" data-copy="westernmeadow@gmail.com">Copy</button></div>
+      </div>
     </div>
     <form id="walk" class="rv" novalidate>
       <div class="two">
@@ -280,7 +323,7 @@ footer .brand{color:var(--fg);font-size:18px}
 <footer>
   <div class="wrap">
     <a class="brand" href="#top">Western Meadow Landscaping</a>
-    <span>Commercial lawn care and landscape maintenance</span>
+    <span>361-442-5084 · westernmeadow@gmail.com</span>
     <span>© <span id="yr">2026</span> Western Meadow Landscaping</span>
   </div>
 </footer>
@@ -342,7 +385,14 @@ footer .brand{color:var(--fg);font-size:18px}
     sent.hidden = false;
     if(!n.value.trim()){sent.textContent='Add your name so we know who to ask for.';n.focus();return;}
     if(!em.validity.valid||!em.value){sent.textContent='Add an email address we can reply to.';em.focus();return;}
-    sent.textContent='Preview only: this form is not connected to an inbox yet, so nothing was sent.';
+    sent.textContent='This form is not connected to an inbox yet, so nothing was sent. Please call 361-442-5084 or email westernmeadow@gmail.com.';
+  });
+  [].forEach.call(document.querySelectorAll('.copy'),function(b){
+    b.addEventListener('click',function(){
+      var done=function(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy';},1600);};
+      var sel=function(){var r=document.createRange();r.selectNodeContents(b.previousElementSibling);var s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected';};
+      try{navigator.clipboard.writeText(b.dataset.copy).then(done,sel);}catch(e){sel();}
+    });
   });
 
   /* scroll reveals: content is visible at rest, the animation only plays on entry */
