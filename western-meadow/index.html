@@ -11,202 +11,225 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout concept: an aerial site plan. The hero is a lawn being mowed live, seen from above;
-   everything below is annotated like a grounds crew's plan sheet. */
+/* Layout concept: the view from above a job in progress. An overhead mowing photo opens the page,
+   an orange "cut line" (the colour of the crew's mower) wipes every image change, and the page
+   closes on a lawn being striped live. */
 :root{
-  --bg:#f2f5ec; --surface:#ffffff; --fg:#14261a; --muted:#55655a; --line:#d3dbca;
-  --turf:#23702f; --marigold:#f4b41a; --on-marigold:#1b1a0c;
+  --bg:#f3f5ec; --surface:#ffffff; --fg:#12241a; --muted:#55655a; --line:#d3dbca;
+  --turf:#23702f; --accent:#f36f1c; --on-accent:#1a1006;
   --lawn-a:#2f8a3c; --lawn-b:#216c2d; --lawn-rough:#1d5527; --on-lawn:#ffffff;
-  --scrim-1:rgba(8,36,16,.62); --scrim-2:rgba(8,36,16,.12);
+  --scrim-1:rgba(6,26,12,.82); --scrim-2:rgba(6,26,12,.08); --chip:rgba(6,26,12,.78);
   --display:"Big Shoulders Display","Arial Narrow","Helvetica Neue",Impact,sans-serif;
   --body:"Instrument Sans","Helvetica Neue",Arial,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
   --gut-l:max(20px,env(safe-area-inset-left,0px)); --gut-r:max(20px,env(safe-area-inset-right,0px));
-  --max:1160px;
+  --max:1200px; --ease:cubic-bezier(.7,0,.2,1);
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0e1811; --surface:#16231a; --fg:#e8efe3; --muted:#9bae9f; --line:#293a2d;
-  --turf:#6cc067; --marigold:#f4b41a; --on-marigold:#1b1a0c;
+  --bg:#0c1a11; --surface:#13241a; --fg:#eaf0e4; --muted:#9db0a1; --line:#28392d;
+  --turf:#6cc067; --accent:#f97d2c; --on-accent:#1a1006;
   --lawn-a:#2a7d37; --lawn-b:#1d6129; --lawn-rough:#184a21;
   color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0e1811; --surface:#16231a; --fg:#e8efe3; --muted:#9bae9f; --line:#293a2d;
-  --turf:#6cc067; --marigold:#f4b41a; --on-marigold:#1b1a0c;
+  --bg:#0c1a11; --surface:#13241a; --fg:#eaf0e4; --muted:#9db0a1; --line:#28392d;
+  --turf:#6cc067; --accent:#f97d2c; --on-accent:#1a1006;
   --lawn-a:#2a7d37; --lawn-b:#1d6129; --lawn-rough:#184a21;
   color-scheme:dark}
 
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--fg);font:400 17px/1.6 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{background:var(--bg);color:var(--fg);font:400 17px/1.6 var(--body);-webkit-font-smoothing:antialiased;overflow-x:clip}
 a{color:inherit}
-h1,h2,h3,p,ul,ol{margin:0}
+h1,h2,h3,p,ul,ol,figure{margin:0}
 ul,ol{padding:0;list-style:none}
 .wrap{max-width:var(--max);margin-inline:auto;padding-left:var(--gut-l);padding-right:var(--gut-r)}
 .tag{font:500 12px/1.3 var(--mono);letter-spacing:.12em;text-transform:uppercase}
-h2{font:800 clamp(40px,6.4vw,76px)/.95 var(--display);text-transform:uppercase;letter-spacing:.005em;text-wrap:balance}
-:focus-visible{outline:3px solid var(--marigold);outline-offset:3px}
-.btn{display:inline-flex;align-items:center;gap:10px;font:600 16px/1 var(--body);padding:16px 22px;border-radius:4px;border:2px solid transparent;text-decoration:none;cursor:pointer;transition:transform .18s ease,background .18s ease}
-.btn-go{background:var(--marigold);color:var(--on-marigold)}
-.btn-go:hover{transform:translateY(-2px)}
+h2{font:800 clamp(42px,6.6vw,84px)/.93 var(--display);text-transform:uppercase;letter-spacing:.005em;text-wrap:balance}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.btn{display:inline-flex;align-items:center;gap:10px;font:600 16px/1 var(--body);padding:17px 24px;border-radius:999px;border:2px solid transparent;text-decoration:none;cursor:pointer;transition:transform .2s ease,background .2s ease,box-shadow .2s ease}
+.btn-go{background:var(--accent);color:var(--on-accent)}
+.btn-go:hover{transform:translateY(-2px);box-shadow:0 10px 24px -10px var(--accent)}
 .btn-go svg{transition:transform .2s ease}
-.btn-go:hover svg{transform:translateX(4px)}
+.btn-go:hover svg{transform:translateX(5px)}
 .btn-line{border-color:var(--on-lawn);color:var(--on-lawn)}
 .btn-line:hover{background:rgba(255,255,255,.14)}
+.prog{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);height:4px;background:var(--accent);transform:scaleX(0);transform-origin:0 50%;z-index:20}
 
 /* ---------- hero ---------- */
-.hero{position:relative;background:var(--lawn-b);color:var(--on-lawn);overflow:hidden;isolation:isolate}
-#lawn{position:absolute;inset:0;width:100%;height:100%;z-index:-2;display:block}
-.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(95deg,var(--scrim-1),var(--scrim-2) 75%)}
+.hero{position:relative;background:var(--lawn-rough);color:var(--on-lawn);overflow:hidden;isolation:isolate}
+.hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:0% 50%;z-index:-2;transform-origin:70% 50%;animation:fly 26s ease-in-out infinite alternate}
+@keyframes fly{from{transform:scale(1.03)}to{transform:scale(1.12)}}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,var(--scrim-1) 0%,var(--scrim-1) 22%,var(--scrim-2) 68%),linear-gradient(180deg,var(--chip) 0,transparent 22%)}
 .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:22px}
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none;font:800 22px/1 var(--display);letter-spacing:.04em;text-transform:uppercase}
 .brand small{display:block;font:500 10px/1 var(--mono);letter-spacing:.22em;margin-top:5px;opacity:.85}
 .brand svg{flex:none}
 .nav ul{display:flex;gap:28px;font-weight:500;font-size:15px}
-.nav ul a{text-decoration:none;padding-block:6px;background:linear-gradient(var(--marigold),var(--marigold)) 0 100%/0 2px no-repeat;transition:background-size .25s ease}
+.nav ul a{text-decoration:none;padding-block:6px;background:linear-gradient(var(--accent),var(--accent)) 0 100%/0 2px no-repeat;transition:background-size .25s ease}
 .nav ul a:hover{background-size:100% 2px}
-.nav .btn{padding:12px 16px;font-size:14px}
-.hero-body{padding-block:clamp(40px,6vw,72px) clamp(64px,8vw,104px);display:grid;gap:26px;max-width:1000px;margin-inline:0}
-.hero h1{font:900 clamp(60px,11vw,136px)/.86 var(--display);text-transform:uppercase;letter-spacing:-.005em;text-shadow:0 2px 0 rgba(0,0,0,.12)}
-.hero h1 span{display:block;overflow:hidden;padding-bottom:.06em}
-.hero h1 i{display:block;font-style:normal;animation:up .9s cubic-bezier(.2,.8,.2,1) both}
+.nav-end{display:flex;align-items:center;gap:20px}
+.nav-tel{font:700 20px/1 var(--display);letter-spacing:.05em;text-decoration:none;white-space:nowrap}
+.nav .btn{padding:12px 18px;font-size:14px}
+.hero-body{padding-block:clamp(44px,7vw,92px) clamp(72px,9vw,124px);display:grid;gap:26px;max-width:700px}
+.hero h1{font:900 clamp(64px,11vw,140px)/.84 var(--display);text-transform:uppercase;letter-spacing:-.005em}
+.hero h1 span{display:block;overflow:hidden;padding-bottom:.07em}
+.hero h1 i{display:block;font-style:normal;animation:up 1s cubic-bezier(.2,.8,.2,1) both}
 .hero h1 span:nth-child(2) i{animation-delay:.12s}
-.hero h1 span:nth-child(3) i{animation-delay:.24s;color:var(--marigold)}
-@keyframes up{from{transform:translateY(105%)}to{transform:none}}
-.hero p.lede{font-size:clamp(18px,2vw,21px);line-height:1.5;max-width:54ch}
+.hero h1 span:nth-child(3) i{animation-delay:.24s;color:var(--accent)}
+@keyframes up{from{transform:translateY(108%)}to{transform:none}}
+.hero .tag{display:flex;align-items:center;gap:12px}
+.hero .tag::before{content:"";width:44px;height:3px;background:var(--accent);transform-origin:0 50%;animation:grow 1s .3s var(--ease) both}
+@keyframes grow{from{transform:scaleX(0)}to{transform:none}}
+.hero p.lede{font-size:clamp(18px,2vw,21px);line-height:1.5;max-width:50ch}
 .cta-row{display:flex;flex-wrap:wrap;gap:12px}
-.plan-note{position:absolute;right:var(--gut-r);bottom:18px;display:flex;gap:10px;align-items:center;background:rgba(8,36,16,.7);padding:8px 12px;border-radius:3px}
-.plan-note b{width:8px;height:8px;border-radius:50%;background:var(--marigold);animation:blink 1.6s ease-in-out infinite}
-@keyframes blink{50%{opacity:.25}}
+.badge{position:absolute;right:calc(var(--gut-r) + 3vw);bottom:54px;width:168px;height:168px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;text-decoration:none;transition:transform .3s ease}
+.badge:hover{transform:scale(1.08)}
+.badge svg.ring{position:absolute;inset:0;animation:spin 20s linear infinite}
+.badge text{font:700 15.5px var(--display);letter-spacing:.14em;text-transform:uppercase;fill:currentColor}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 /* ---------- marquee ---------- */
-.strip{border-bottom:1px solid var(--line);overflow:hidden;padding-block:18px}
-.strip div{display:flex;gap:44px;width:max-content;animation:slide 38s linear infinite;font:700 24px/1 var(--display);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.strip{background:var(--fg);color:var(--bg);overflow:hidden;padding-block:16px}
+.strip div{display:flex;gap:44px;width:max-content;animation:slide 40s linear infinite;font:700 24px/1 var(--display);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
 .strip span{display:flex;gap:44px;align-items:center}
-.strip span::after{content:"";width:22px;height:10px;background:repeating-linear-gradient(90deg,var(--turf) 0 4px,transparent 4px 7px)}
+.strip span::after{content:"";width:10px;height:10px;background:var(--accent);transform:rotate(45deg)}
 @keyframes slide{to{transform:translateX(-50%)}}
 
 /* ---------- sections ---------- */
-section{padding-block:clamp(64px,9vw,120px)}
+section{padding-block:clamp(64px,9vw,128px)}
 .head{display:grid;gap:18px;margin-bottom:clamp(36px,5vw,64px)}
 .head .tag{color:var(--turf)}
 .head p{color:var(--muted);max-width:60ch;font-size:19px}
 
-.services{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:40px}
-.svc{display:grid;grid-template-columns:56px minmax(0,1fr);gap:18px;padding-block:28px;border-top:1px solid var(--line);align-items:start}
-.svc h3{font:700 27px/1.05 var(--display);text-transform:uppercase;letter-spacing:.02em;margin-bottom:8px}
-.svc p{color:var(--muted);font-size:16px}
-.sym{width:56px;height:56px;border-radius:4px;border:1.5px solid var(--fg);background-color:var(--surface);transition:background-position .6s ease,transform .3s ease,background-size .4s ease}
-.svc:hover .sym{transform:rotate(-4deg)}
-.s-mow{background-image:repeating-linear-gradient(90deg,var(--turf) 0 7px,transparent 7px 14px)}
-.svc:hover .s-mow{background-position:14px 0}
-.s-feed{background-image:radial-gradient(var(--turf) 1.6px,transparent 2px);background-size:9px 9px}
-.svc:hover .s-feed{background-size:6px 6px}
-.s-water{background-image:repeating-radial-gradient(circle at 50% 50%,transparent 0 6px,var(--turf) 6px 7.5px)}
-.svc:hover .s-water{background-size:130% 130%;background-position:50% 50%}
-.s-bed{background-image:radial-gradient(circle at 30% 35%,var(--marigold) 0 6px,transparent 7px),radial-gradient(circle at 68% 62%,var(--turf) 0 8px,transparent 9px),radial-gradient(circle at 30% 75%,var(--turf) 0 4px,transparent 5px)}
-.s-tree{background-image:radial-gradient(circle,var(--turf) 0 15px,transparent 16px),radial-gradient(circle,transparent 0 20px,var(--turf) 20px 21.5px,transparent 22px)}
-.s-clean{background-image:repeating-linear-gradient(45deg,var(--turf) 0 2px,transparent 2px 9px),repeating-linear-gradient(-45deg,var(--turf) 0 2px,transparent 2px 9px)}
-.svc:hover .s-clean{background-position:9px 0}
+/* image stack with the cut-line wipe */
+.stack{position:relative;overflow:hidden;border-radius:6px;background:var(--lawn-rough);max-width:100%}
+.stack img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0}
+.stack img.was{opacity:1;z-index:1}
+.stack img.on{opacity:1;z-index:2;animation:wipe .85s var(--ease)}
+@keyframes wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+.stack.cut::after{content:"";position:absolute;top:0;bottom:0;left:0;width:5px;background:var(--accent);z-index:3;animation:cutline .85s var(--ease) both}
+@keyframes cutline{from{left:0;opacity:1}98%{opacity:1}to{left:100%;opacity:0}}
+.stack .tag{position:absolute;left:14px;bottom:14px;z-index:4;background:var(--chip);color:var(--on-lawn);padding:8px 11px;border-radius:3px}
 
-/* ---------- photos ---------- */
-.photos{padding-block:0 clamp(64px,9vw,120px)}
-.shots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.shot{position:relative;margin:0;overflow:hidden;border-radius:4px;background:var(--lawn-rough);aspect-ratio:4/3;max-width:100%}
-.shot.wide{grid-column:1/-1;aspect-ratio:16/8}
-.shot img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 1.2s cubic-bezier(.2,.8,.2,1)}
-.shot.wide img{animation:pan 24s ease-in-out infinite alternate}
-@keyframes pan{from{transform:scale(1.02)}to{transform:scale(1.12) translate(-1.5%,-1.5%)}}
-.shot:hover img{transform:scale(1.07)}
-.shot figcaption{position:absolute;left:12px;bottom:12px;background:rgba(8,36,16,.78);color:var(--on-lawn);padding:7px 10px;border-radius:3px}
+/* ---------- property types ---------- */
+.prop-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,72px);align-items:start}
+.prop-list{display:grid}
+.prop-list button{display:flex;align-items:center;justify-content:space-between;gap:16px;text-align:left;font:800 clamp(30px,3.6vw,48px)/1 var(--display);text-transform:uppercase;letter-spacing:.01em;padding:22px 0;background:none;border:0;border-top:1px solid var(--line);color:var(--muted);cursor:pointer;transition:color .25s ease,padding .35s var(--ease)}
+.prop-list button:last-child{border-bottom:1px solid var(--line)}
+.prop-list button::after{content:"";flex:none;width:14px;height:14px;background:var(--accent);transform:rotate(45deg) scale(0);transition:transform .35s var(--ease)}
+.prop-list button:hover{color:var(--fg)}
+.prop-list button[aria-selected="true"]{color:var(--fg);padding-left:18px}
+.prop-list button[aria-selected="true"]::after{transform:rotate(45deg) scale(1)}
+.prop-view{display:grid;gap:24px}
+.prop-view .stack{aspect-ratio:16/10}
+.pts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.pts li{border-top:3px solid var(--fg);padding-top:12px;font-size:16px;animation:rise .5s ease both}
+.pts li:nth-child(2){animation-delay:.07s}.pts li:nth-child(3){animation-delay:.14s}
 
-/* ---------- reach us ---------- */
-.reach{display:grid;gap:14px;margin-top:8px}
-.reach div{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
-.reach a{text-decoration:none;user-select:all}
-.reach .ph{font:900 clamp(38px,5vw,56px)/1 var(--display);letter-spacing:.02em;color:var(--marigold)}
-.reach .em{font-size:19px;font-weight:600;overflow-wrap:anywhere}
-.copy{font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--on-lawn);background:rgba(8,36,16,.55);border:1px solid rgba(255,255,255,.5);border-radius:3px;padding:8px 10px;cursor:pointer}
-.copy:hover{background:rgba(8,36,16,.85)}
-.nav-tel{font:700 20px/1 var(--display);letter-spacing:.05em;text-decoration:none;white-space:nowrap}
-.nav-end{display:flex;align-items:center;gap:20px}
+/* ---------- a visit, pinned ---------- */
+.visit{background:var(--surface);border-block:1px solid var(--line)}
+.visit-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(28px,6vw,88px);align-items:start}
+.visit-media{position:sticky;top:calc(env(safe-area-inset-top,0px) + 11vh)}
+.visit-media .stack{height:min(76vh,660px)}
+.svc{padding-block:clamp(28px,5vw,44px);border-top:1px solid var(--line);display:grid;gap:12px}
+.svc h3{font:800 clamp(34px,4.4vw,58px)/.95 var(--display);text-transform:uppercase;letter-spacing:.01em;color:var(--muted);transition:color .35s ease}
+.svc p{color:var(--muted);max-width:46ch}
+.svc .n{font:500 12px/1 var(--mono);letter-spacing:.12em;color:var(--turf)}
+.svc.active h3{color:var(--fg)}
+.svc.active .n::after{content:"";display:inline-block;width:36px;height:3px;background:var(--accent);margin-left:12px;vertical-align:middle;animation:grow .5s var(--ease) both;transform-origin:0 50%}
+.svc img{display:none;border-radius:6px;width:100%;aspect-ratio:16/10;object-fit:cover}
 
 /* ---------- seasons ---------- */
-.year{background:var(--surface);border-block:1px solid var(--line)}
 .year-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(28px,5vw,72px);align-items:start}
 .tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
-.tabs button{font:700 22px/1 var(--display);text-transform:uppercase;letter-spacing:.05em;padding:12px 18px;border-radius:4px;border:1.5px solid var(--line);background:transparent;color:var(--fg);cursor:pointer;transition:background .2s,border-color .2s,color .2s}
+.tabs button{font:700 22px/1 var(--display);text-transform:uppercase;letter-spacing:.05em;padding:12px 20px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--fg);cursor:pointer;transition:background .2s,border-color .2s,color .2s}
 .tabs button:hover{border-color:var(--fg)}
 .tabs button[aria-selected="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 .months{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:4px;margin-bottom:28px}
-.months li{font:500 11px/1 var(--mono);text-align:center;padding:10px 0;border-radius:2px;background:var(--bg);color:var(--muted);transition:background .35s ease,color .35s ease,transform .35s ease}
-.months li.on{background:var(--turf);color:var(--surface);transform:translateY(-4px)}
-.tasks{display:grid;gap:0}
+.months li{font:500 11px/1 var(--mono);text-align:center;padding:10px 0;border-radius:2px;background:var(--surface);color:var(--muted);transition:background .35s ease,color .35s ease,transform .35s ease}
+.months li.on{background:var(--turf);color:var(--surface);transform:translateY(-5px)}
 .tasks li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:14px;padding-block:16px;border-top:1px solid var(--line);animation:rise .5s ease both}
 .tasks li:nth-child(2){animation-delay:.06s}.tasks li:nth-child(3){animation-delay:.12s}.tasks li:nth-child(4){animation-delay:.18s}
-.tasks li::before{content:"";width:12px;height:12px;margin-top:8px;background:var(--marigold);border-radius:50%}
+.tasks li::before{content:"";width:10px;height:10px;margin-top:9px;background:var(--accent);transform:rotate(45deg)}
 .tasks strong{display:block;font-weight:600}
 .tasks span{color:var(--muted);font-size:16px}
-@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 
 /* ---------- process ---------- */
+.start{background:var(--fg);color:var(--bg)}
+.start .head .tag{color:var(--accent)}
 .steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:32px;counter-reset:s}
-.steps li{counter-increment:s;border-top:3px solid var(--fg);padding-top:16px;display:grid;gap:8px;align-content:start}
-.steps li::before{content:counter(s,decimal-leading-zero);font:900 64px/.9 var(--display);color:var(--turf)}
-.steps h3{font:700 26px/1.05 var(--display);text-transform:uppercase;letter-spacing:.02em}
-.steps p{color:var(--muted);font-size:16px}
+.steps li{counter-increment:s;border-top:3px solid var(--accent);padding-top:16px;display:grid;gap:8px;align-content:start}
+.steps li::before{content:counter(s,decimal-leading-zero);font:900 72px/.9 var(--display);color:var(--accent)}
+.steps h3{font:700 27px/1.05 var(--display);text-transform:uppercase;letter-spacing:.02em}
+.steps p{font-size:16px;opacity:.78}
 
 /* ---------- contact ---------- */
-.contact{background:repeating-linear-gradient(90deg,var(--lawn-a) 0 84px,var(--lawn-b) 84px 168px);color:var(--on-lawn);animation:drift 14s linear infinite}
-@keyframes drift{to{background-position:168px 0}}
+.contact{position:relative;background:var(--lawn-b);color:var(--on-lawn);overflow:hidden;isolation:isolate}
+#lawn{position:absolute;inset:0;width:100%;height:100%;z-index:-2;display:block}
+.contact::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(95deg,var(--scrim-1),var(--scrim-2) 80%)}
 .contact-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,5vw,72px);align-items:center}
-.contact h2{font-size:clamp(48px,8vw,104px)}
+.contact h2{font-size:clamp(50px,8vw,108px)}
 .contact .intro{display:grid;gap:20px}
 .contact .intro p{font-size:19px;max-width:44ch}
-form{background:var(--surface);color:var(--fg);padding:clamp(22px,3vw,36px);border-radius:6px;display:grid;gap:16px;box-shadow:0 24px 50px -20px rgba(0,0,0,.5)}
+.reach{display:grid;gap:14px;margin-top:8px}
+.reach div{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.reach a{text-decoration:none;user-select:all}
+.reach .ph{font:900 clamp(40px,5.4vw,64px)/1 var(--display);letter-spacing:.02em;color:var(--accent)}
+.reach .em{font-size:19px;font-weight:600;overflow-wrap:anywhere}
+.copy{font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--on-lawn);background:var(--chip);border:1px solid rgba(255,255,255,.5);border-radius:3px;padding:8px 10px;cursor:pointer}
+.copy:hover{border-color:var(--on-lawn)}
+form{background:var(--surface);color:var(--fg);padding:clamp(22px,3vw,36px);border-radius:8px;display:grid;gap:16px;box-shadow:0 24px 50px -20px rgba(0,0,0,.6)}
 .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
 label{display:grid;gap:6px;font:500 12px/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 input,select,textarea{font:400 16px/1.4 var(--body);letter-spacing:0;text-transform:none;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:4px;padding:12px;width:100%;min-width:0}
 input:focus,select:focus,textarea:focus{border-color:var(--turf);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--turf) 25%,transparent)}
 textarea{resize:vertical;min-height:88px}
 form .btn{justify-content:center}
-#sent{font-size:15px;color:var(--fg);border-left:3px solid var(--marigold);padding-left:12px}
+#sent{font-size:15px;color:var(--fg);border-left:3px solid var(--accent);padding-left:12px}
+.plan-note{position:absolute;right:var(--gut-r);bottom:16px;display:flex;gap:10px;align-items:center;background:var(--chip);padding:8px 12px;border-radius:3px}
+.plan-note b{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:blink 1.6s ease-in-out infinite}
+@keyframes blink{50%{opacity:.25}}
 
 footer{padding-block:36px;color:var(--muted);font-size:14px}
 footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-between;align-items:center}
 footer .brand{color:var(--fg);font-size:18px}
 
-.rv.in{animation:rise .7s cubic-bezier(.2,.8,.2,1) both}
+.rv.in{animation:rise .8s cubic-bezier(.2,.8,.2,1) both}
 
+@media (max-width:980px){.badge{display:none}}
 @media (max-width:900px){
-  .services{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .year-grid,.contact-grid{grid-template-columns:minmax(0,1fr)}
+  .prop-grid,.visit-grid,.year-grid,.contact-grid{grid-template-columns:minmax(0,1fr)}
+  .visit-media{display:none}
+  .svc img{display:block}
+  .svc h3{color:var(--fg)}
   .steps{grid-template-columns:repeat(2,minmax(0,1fr))}
   .nav ul{display:none}
 }
-@media (max-width:700px){
-  .nav-tel{display:none}
-  .shots{grid-template-columns:minmax(0,1fr)}
-  .shot.wide{aspect-ratio:4/3}
-}
+@media (max-width:700px){.nav-tel{display:none}}
 @media (max-width:560px){
-  .services,.steps,.two{grid-template-columns:minmax(0,1fr)}
-  .plan-note{position:static;margin:0 var(--gut-r) 16px var(--gut-l);width:fit-content}
-  .hero::after{background:linear-gradient(180deg,var(--scrim-1),var(--scrim-1))}
-  .tabs button{font-size:19px;padding:10px 13px}
+  .steps,.two,.pts{grid-template-columns:minmax(0,1fr)}
+  .hero::after{background:linear-gradient(180deg,var(--scrim-1),rgba(6,26,12,.55))}
+  .hero-img{object-position:58% 50%}
+  .tabs button{font-size:19px;padding:10px 14px}
   .brand small{display:none}
+  .plan-note{position:static;margin:20px var(--gut-r) 0 var(--gut-l);width:fit-content}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
 }
 </style>
 
+<div class="prog" id="prog" aria-hidden="true"></div>
+
 <header class="hero" id="top">
-  <canvas id="lawn" aria-hidden="true"></canvas>
+  <img class="hero-img" src="img/hero.jpg" alt="Overhead view of a crew member mowing a striped lawn beside a stone path">
   <nav class="nav wrap" aria-label="Main">
     <a class="brand" href="#top">
-      <svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><circle cx="19" cy="19" r="18" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 25c5-9 9-12 12-12s7 3 12 12" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 28l4-9m3 9V17m7 11l-4-9" fill="none" stroke="#f4b41a" stroke-width="2.4" stroke-linecap="round"/></svg>
+      <svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><circle cx="19" cy="19" r="18" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 25c5-9 9-12 12-12s7 3 12 12" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 28l4-9m3 9V17m7 11l-4-9" fill="none" stroke="#f36f1c" stroke-width="2.4" stroke-linecap="round"/></svg>
       <span>Western Meadow<small>Landscaping</small></span>
     </a>
     <ul>
+      <li><a href="#properties">Properties</a></li>
       <li><a href="#services">Services</a></li>
       <li><a href="#year">The year</a></li>
       <li><a href="#start">Getting started</a></li>
@@ -219,54 +242,66 @@ footer .brand{color:var(--fg);font-size:18px}
   <div class="wrap">
     <div class="hero-body">
       <p class="tag">Commercial grounds care</p>
-      <h1><span><i>First</i></span><span><i>impressions,</i></span><span><i>mowed weekly.</i></span></h1>
-      <p class="lede">Lawn care and landscape maintenance for office parks, retail centers, HOAs and industrial sites. One crew, one schedule, one point of contact for the whole property.</p>
+      <h1><span><i>Grounds</i></span><span><i>that mean</i></span><span><i>business.</i></span></h1>
+      <p class="lede">Western Meadow Landscaping keeps office parks, retail centers, HOAs and industrial sites cut, edged and ready for customers. One crew, one schedule, one point of contact.</p>
       <div class="cta-row">
         <a class="btn btn-go" href="#contact">Request a site walk
           <svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true"><path d="M0 6h15M11 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg></a>
-        <a class="btn btn-line" href="#services">See what we maintain</a>
+        <a class="btn btn-line" href="#properties">Find your property type</a>
       </div>
     </div>
   </div>
-  <p class="plan-note tag"><b></b><span id="note">Crew on site · mow height 3.0 in</span></p>
+  <a class="badge" href="#contact" aria-label="Request a free site walk">
+    <svg class="ring" viewBox="0 0 168 168" aria-hidden="true"><defs><path id="circ" d="M84 84m-64 0a64 64 0 1 1 128 0a64 64 0 1 1-128 0"/></defs><text><textPath href="#circ">Free site walk · Business properties · </textPath></text></svg>
+    <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><path d="M8 26L26 8M12 8h14v14" fill="none" stroke="currentColor" stroke-width="3"/></svg>
+  </a>
 </header>
 
 <div class="strip" aria-hidden="true"><div id="marq"></div></div>
 
 <main>
-<section id="services">
+<section id="properties">
   <div class="wrap">
     <div class="head rv">
-      <p class="tag">Plan legend · services</p>
-      <h2>Everything outside your front door</h2>
-      <p>Tenants and customers judge a property before they reach the lobby. We take care of every square foot they walk past on the way in.</p>
+      <p class="tag">Who we work for</p>
+      <h2>Built for business properties</h2>
+      <p>A storefront, a campus and a warehouse each need something different from their grounds crew. Pick yours.</p>
     </div>
-    <div class="services">
-      <article class="svc rv"><div class="sym s-mow"></div><div><h3>Mowing &amp; edging</h3><p>Striped turf, crisp edges along every walk and curb, and clippings blown clear of entrances before we leave.</p></div></article>
-      <article class="svc rv"><div class="sym s-feed"></div><div><h3>Turf nutrition</h3><p>Fertilization and weed control timed to the season, so the lawn stays thick and evenly green.</p></div></article>
-      <article class="svc rv"><div class="sym s-water"></div><div><h3>Irrigation</h3><p>Spring start-up, zone-by-zone checks and repairs, and winterization. Water goes on the turf and stays off the parking lot.</p></div></article>
-      <article class="svc rv"><div class="sym s-bed"></div><div><h3>Beds &amp; seasonal color</h3><p>Weeded beds, fresh mulch and flower rotations at signs and entries, where people look first.</p></div></article>
-      <article class="svc rv"><div class="sym s-tree"></div><div><h3>Trees &amp; shrubs</h3><p>Pruning for shape, sightlines and clearance over walks, drives and signage.</p></div></article>
-      <article class="svc rv"><div class="sym s-clean"></div><div><h3>Seasonal cleanups</h3><p>Leaf removal, storm debris and litter pickup, so the site looks cared for between growing seasons too.</p></div></article>
+    <div class="prop-grid">
+      <div class="prop-list rv" role="tablist" aria-label="Property type" id="prop-list"></div>
+      <div class="prop-view rv">
+        <div class="stack" id="prop-stack"><span class="tag" id="prop-cap"></span></div>
+        <ul class="pts" id="prop-pts" role="tabpanel" aria-live="polite"></ul>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="photos" aria-label="What well-kept grounds look like">
-  <div class="wrap shots">
-    <figure class="shot wide rv"><img src="img/aerial.jpg" alt="Office building with a striped lawn, live oaks and planted beds"><figcaption class="tag">Striped turf</figcaption></figure>
-    <figure class="shot rv"><img src="img/edge.jpg" alt="Crisp lawn edge along a sidewalk at a retail center" loading="lazy"><figcaption class="tag">Clean edges</figcaption></figure>
-    <figure class="shot rv"><img src="img/beds.jpg" alt="Entry bed with seasonal flowers, fresh mulch and pruned shrubs" loading="lazy"><figcaption class="tag">Entry beds</figcaption></figure>
-    <figure class="shot rv"><img src="img/water.jpg" alt="Sprinklers running on a commercial lawn at sunrise" loading="lazy"><figcaption class="tag">Irrigation</figcaption></figure>
+<section class="visit" id="services">
+  <div class="wrap visit-grid">
+    <div class="visit-media" aria-hidden="true"><div class="stack" id="svc-stack"></div></div>
+    <div>
+      <div class="head rv">
+        <p class="tag">Services</p>
+        <h2>Everything outside your front door</h2>
+        <p>Tenants and customers judge a property before they reach the lobby. We take care of every square foot they pass on the way in.</p>
+      </div>
+      <article class="svc" data-img="img/cut.jpg"><span class="n">MOWING</span><img src="img/cut.jpg" alt="Commercial walk-behind mower throwing clippings" loading="lazy"><h3>Mowing that leaves stripes</h3><p>Commercial mowers, sharp blades and a set cut height. Clippings are blown clear of walks and entrances before the crew leaves.</p></article>
+      <article class="svc" data-img="img/edge.jpg"><span class="n">EDGING</span><img src="img/edge.jpg" alt="Crisp lawn edge along a sidewalk" loading="lazy"><h3>Edges you could rule a line by</h3><p>Every walk, curb and bed line is cut clean on each visit. It is the detail people notice without knowing why.</p></article>
+      <article class="svc" data-img="img/beds.jpg"><span class="n">BEDS &amp; COLOR</span><img src="img/beds.jpg" alt="Entry planting bed with seasonal flowers" loading="lazy"><h3>Entries that get noticed</h3><p>Weeded beds, fresh mulch and seasonal flowers at signs and front doors, where people look first.</p></article>
+      <article class="svc" data-img="img/trees.jpg"><span class="n">TREES &amp; PLANTING</span><img src="img/trees.jpg" alt="Row of newly planted palms and trees in mulched rings" loading="lazy"><h3>Planting and tree care</h3><p>New trees, palms and shrubs installed and mulched, then pruned for shape, sightlines and clearance over walks and drives.</p></article>
+      <article class="svc" data-img="img/water.jpg"><span class="n">IRRIGATION</span><img src="img/water.jpg" alt="Sprinklers running on a lawn at sunrise" loading="lazy"><h3>Water where it belongs</h3><p>Start-up, zone-by-zone checks and repairs. Water goes on the turf and stays off the parking lot.</p></article>
+      <article class="svc" data-img="img/crew.jpg"><span class="n">CLEANUPS</span><img src="img/crew.jpg" alt="Crew member mowing beside a stone building" loading="lazy"><h3>Tidy between seasons</h3><p>Leaves, storm debris and litter cleared from turf, beds and parking islands, so the site looks cared for all year.</p></article>
+    </div>
   </div>
 </section>
 
-<section class="year" id="year">
+<section id="year">
   <div class="wrap year-grid">
     <div class="head rv" style="margin-bottom:0">
       <p class="tag">Maintenance calendar</p>
       <h2>Twelve months, planned ahead</h2>
-      <p>Grounds care is a calendar. You see the whole year before the first visit, so nothing on your property is a surprise. Pick a season to see what the crew is doing.</p>
+      <p>Grounds care is a calendar. You see the whole year before the first visit, so nothing on your property or your budget is a surprise. Pick a season.</p>
     </div>
     <div class="rv">
       <div class="tabs" role="tablist" aria-label="Season" id="tabs"></div>
@@ -276,7 +311,7 @@ footer .brand{color:var(--fg);font-size:18px}
   </div>
 </section>
 
-<section id="start">
+<section class="start" id="start">
   <div class="wrap">
     <div class="head rv">
       <p class="tag">Getting started</p>
@@ -292,9 +327,10 @@ footer .brand{color:var(--fg);font-size:18px}
 </section>
 
 <section class="contact" id="contact">
+  <canvas id="lawn" aria-hidden="true"></canvas>
   <div class="wrap contact-grid">
     <div class="intro rv">
-      <p class="tag">Free for commercial properties</p>
+      <p class="tag">Free for business properties</p>
       <h2>Let’s walk your property</h2>
       <p>Tell us about the site. We’ll set up a walk-through and follow with a written scope and price. Or call or email us directly.</p>
       <div class="reach">
@@ -310,13 +346,14 @@ footer .brand{color:var(--fg);font-size:18px}
       <div class="two">
         <label for="f-email">Email<input id="f-email" name="email" type="email" autocomplete="email" required></label>
         <label for="f-type">Property type
-          <select id="f-type" name="type"><option>Office park</option><option>Retail center</option><option>HOA / community</option><option>Industrial site</option><option>Multifamily</option><option>Medical or school campus</option><option>Other</option></select></label>
+          <select id="f-type" name="type"><option>Office park</option><option>Retail center</option><option>HOA / multifamily</option><option>Industrial site</option><option>Medical or school campus</option><option>Other</option></select></label>
       </div>
       <label for="f-notes">About the property<textarea id="f-notes" name="notes" placeholder="Address, rough size, what’s bothering you about it today"></textarea></label>
       <button class="btn btn-go" type="submit">Request a site walk</button>
       <p id="sent" role="status" hidden></p>
     </form>
   </div>
+  <p class="plan-note tag"><b></b><span id="note">Crew on site · mow height 3.0 in</span></p>
 </section>
 </main>
 
@@ -331,12 +368,65 @@ footer .brand{color:var(--fg);font-size:18px}
 <script>
 (function(){
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  document.getElementById('yr').textContent = new Date().getFullYear();
+  var $ = function(id){return document.getElementById(id);};
+  $('yr').textContent = new Date().getFullYear();
+
+  /* scroll progress */
+  var prog = $('prog');
+  function onScroll(){var d=document.documentElement,m=d.scrollHeight-innerHeight;prog.style.transform='scaleX('+(m>0?Math.min(1,scrollY/m):0)+')';}
+  addEventListener('scroll',onScroll,{passive:true});onScroll();
 
   /* marquee */
   var kinds = ['Office parks','Retail centers','HOA communities','Industrial sites','Medical campuses','Multifamily','Schools','Corporate campuses'];
   var m = kinds.map(function(k){return '<span>'+k+'</span>';}).join('');
-  document.getElementById('marq').innerHTML = m + m;
+  $('marq').innerHTML = m + m;
+
+  /* image stack: the new image wipes in behind an orange cut line */
+  function Stack(el,items){
+    var cur=0,imgs=items.map(function(it,i){
+      var im=new Image();im.src=it[0];im.alt=it[1]||'';if(i===0)im.className='on';el.appendChild(im);return im;});
+    return function(i){
+      if(i===cur)return;
+      imgs.forEach(function(im){im.classList.remove('was');});
+      imgs[cur].classList.remove('on');imgs[cur].classList.add('was');imgs[i].classList.add('on');cur=i;
+      el.classList.remove('cut');void el.offsetWidth;el.classList.add('cut');
+    };
+  }
+
+  /* property types */
+  var props = [
+    {name:'Office parks', cap:'Office & corporate', img:'img/aerial.jpg', alt:'Office building with a striped lawn and live oaks', pts:[
+      'Entries, signage and walks get first attention on every visit.','Mowing timed before the workday starts or after it ends.','Seasonal color at monument signs and front doors.']},
+    {name:'Retail centers', cap:'Retail', img:'img/edge.jpg', alt:'Clean lawn edge along a retail center sidewalk', pts:[
+      'Litter and debris cleared from turf, beds and parking islands.','Crews stay out of the way during peak shopping hours.','Curb lines and islands kept sharp, where shoppers park.']},
+    {name:'HOAs & multifamily', cap:'Communities', img:'img/crew.jpg', alt:'Crew member mowing beside a stone building', pts:[
+      'Common areas, entries and amenity lawns on one schedule.','A clear scope your board can read and approve.','Tree and palm planting for new phases and replacements.']},
+    {name:'Industrial sites', cap:'Industrial & logistics', img:'img/water.jpg', alt:'Wide commercial lawn with irrigation running', pts:[
+      'Wide-area mowing along frontage, fence lines and basins.','Clear sightlines at drives and truck entrances.','Irrigation kept efficient across large zones.']}
+  ];
+  var plist=$('prop-list'),ppts=$('prop-pts'),pcap=$('prop-cap');
+  var pshow=Stack($('prop-stack'),props.map(function(p){return [p.img,p.alt];}));
+  function pickProp(i){
+    [].forEach.call(plist.children,function(b,j){b.setAttribute('aria-selected',j===i);});
+    pshow(i);pcap.textContent=props[i].cap;
+    ppts.innerHTML=props[i].pts.map(function(t){return '<li>'+t+'</li>';}).join('');
+  }
+  props.forEach(function(p,i){
+    var b=document.createElement('button');b.type='button';b.id='prop-'+i;b.setAttribute('role','tab');b.textContent=p.name;
+    b.addEventListener('click',function(){pickProp(i);});b.addEventListener('mouseenter',function(){pickProp(i);});b.addEventListener('focus',function(){pickProp(i);});
+    plist.appendChild(b);
+  });
+  pickProp(0);
+
+  /* services: pinned image follows the service being read */
+  var svcs=[].slice.call(document.querySelectorAll('.svc'));
+  var sshow=Stack($('svc-stack'),svcs.map(function(s){return [s.dataset.img,''];}));
+  function setSvc(i){svcs.forEach(function(s,j){s.classList.toggle('active',j===i);});sshow(i);}
+  setSvc(0);svcs[0].classList.add('active');
+  if('IntersectionObserver' in window){
+    var so=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)setSvc(svcs.indexOf(e.target));});},{rootMargin:'-45% 0px -45% 0px'});
+    svcs.forEach(function(s){so.observe(s);});
+  }
 
   /* seasons */
   var seasons = [
@@ -354,35 +444,35 @@ footer .brand{color:var(--fg);font-size:18px}
       ['Leaf removal','Lawns, beds, walks and parking islands cleared on a set rotation.'],
       ['Fall fertilization','Feeding roots now for a faster green-up next spring.'],
       ['Shrub pruning','Shape and clearance work once growth slows.'],
-      ['Irrigation winterization','Lines blown out and the system shut down before the first freeze.']]},
+      ['Irrigation check','Run times cut back and the system inspected as the weather cools.']]},
     {name:'Winter', months:[11,0,1], tasks:[
       ['Dormant pruning','Structural cuts on trees and shrubs while they rest.'],
       ['Site inspections','Regular walk-throughs for litter, storm debris and damage.'],
       ['Bed and hardscape upkeep','Winter weeds pulled, walks and curbs kept tidy.'],
       ['Next year’s plan','Budget and improvement ideas on your desk before spring.']]}
   ];
-  var tabs = document.getElementById('tabs'), months = document.getElementById('months'), tasks = document.getElementById('tasks');
+  var tabs=$('tabs'),months=$('months'),tasks=$('tasks');
   'JFMAMJJASOND'.split('').forEach(function(c){var li=document.createElement('li');li.textContent=c;months.appendChild(li);});
   function pick(i){
-    var s = seasons[i];
-    [].forEach.call(tabs.children,function(b,j){b.setAttribute('aria-selected', j===i);});
-    [].forEach.call(months.children,function(li,j){li.classList.toggle('on', s.months.indexOf(j)>-1);});
-    tasks.innerHTML = s.tasks.map(function(t){return '<li><div><strong>'+t[0]+'</strong><span>'+t[1]+'</span></div></li>';}).join('');
+    var s=seasons[i];
+    [].forEach.call(tabs.children,function(b,j){b.setAttribute('aria-selected',j===i);});
+    [].forEach.call(months.children,function(li,j){li.classList.toggle('on',s.months.indexOf(j)>-1);});
+    tasks.innerHTML=s.tasks.map(function(t){return '<li><div><strong>'+t[0]+'</strong><span>'+t[1]+'</span></div></li>';}).join('');
   }
   seasons.forEach(function(s,i){
     var b=document.createElement('button');b.type='button';b.id='tab-'+s.name.toLowerCase();b.setAttribute('role','tab');b.textContent=s.name;
     b.addEventListener('click',function(){pick(i);});tabs.appendChild(b);
   });
-  var mo = new Date().getMonth(), cur = 0;
+  var mo=new Date().getMonth(),cur=0;
   seasons.forEach(function(s,i){if(s.months.indexOf(mo)>-1)cur=i;});
   pick(cur);
 
-  /* form: preview only, nothing is transmitted */
-  var form = document.getElementById('walk'), sent = document.getElementById('sent');
+  /* form: nothing is transmitted yet */
+  var form=$('walk'),sent=$('sent');
   form.addEventListener('submit',function(e){
     e.preventDefault();
-    var n = form.elements.name, em = form.elements.email;
-    sent.hidden = false;
+    var n=form.elements.name,em=form.elements.email;
+    sent.hidden=false;
     if(!n.value.trim()){sent.textContent='Add your name so we know who to ask for.';n.focus();return;}
     if(!em.validity.valid||!em.value){sent.textContent='Add an email address we can reply to.';em.focus();return;}
     sent.textContent='This form is not connected to an inbox yet, so nothing was sent. Please call 361-442-5084 or email westernmeadow@gmail.com.';
@@ -397,14 +487,13 @@ footer .brand{color:var(--fg);font-size:18px}
 
   /* scroll reveals: content is visible at rest, the animation only plays on entry */
   if(!reduce && 'IntersectionObserver' in window){
-    var io = new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.15});
-    [].forEach.call(document.querySelectorAll('.rv'),function(el,i){el.style.animationDelay=(i%3)*70+'ms';io.observe(el);});
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.15});
+    [].forEach.call(document.querySelectorAll('.rv'),function(el,i){el.style.animationDelay=(i%4)*80+'ms';io.observe(el);});
   }
 
-  /* ---------- hero lawn ---------- */
-  var cv = document.getElementById('lawn'), cx = cv.getContext('2d'), hero = cv.parentNode;
-  var W=0,H=0,rows=8,rowH=60,p=0,phase=0,hold=0,alpha=1,last=0,running=false,visible=true,parts=[],pat={};
-  var note = document.getElementById('note');
+  /* ---------- closing lawn, striped live ---------- */
+  var cv=$('lawn'),cx=cv.getContext('2d'),host=cv.parentNode,note=$('note');
+  var W=0,H=0,rows=8,rowH=60,p=0,phase=0,hold=0,alpha=1,last=0,running=false,visible=false,parts=[],pat={};
   function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
   function tex(base,rough){
     var c=document.createElement('canvas');c.width=c.height=180;var g=c.getContext('2d');
@@ -416,25 +505,21 @@ footer .brand{color:var(--fg);font-size:18px}
     }
     return cx.createPattern(c,'repeat');
   }
-  function build(){
-    pat.a=tex(css('--lawn-a'));pat.b=tex(css('--lawn-b'));pat.r=tex(css('--lawn-rough'),true);
-  }
+  function build(){pat.a=tex(css('--lawn-a'));pat.b=tex(css('--lawn-b'));pat.r=tex(css('--lawn-rough'),true);if(!running&&W)draw(0);}
   function size(){
-    var r=hero.getBoundingClientRect(),d=Math.min(window.devicePixelRatio||1,2);
+    var r=host.getBoundingClientRect(),d=Math.min(window.devicePixelRatio||1,2);
     W=r.width;H=r.height;cv.width=W*d;cv.height=H*d;cx.setTransform(d,0,0,d,0,0);
-    rows=Math.max(6,Math.round(H/66));rowH=H/rows;
+    rows=Math.max(6,Math.round(H/70));rowH=H/rows;if(p>rows)p=rows;
     if(!running)draw(0);
   }
-  var trees=[[.9,.1,78],[.975,.42,52],[.8,-.02,48],[.02,1,62],[.62,1.03,44]];
-  function mowerPos(){
+  function pos(){
     var r=Math.min(Math.floor(p),rows-1),f=Math.min(p-r,1),dir=r%2?-1:1,pad=rowH;
-    var x=dir>0?-pad+f*(W+2*pad):W+pad-f*(W+2*pad);
-    return {r:r,x:x,y:(r+.5)*rowH,dir:dir};
+    return {r:r,x:dir>0?-pad+f*(W+2*pad):W+pad-f*(W+2*pad),y:(r+.5)*rowH,dir:dir};
   }
-  function draw(t){
+  function rr(x,y,w,h,r){cx.beginPath();if(cx.roundRect)cx.roundRect(x,y,w,h,r);else cx.rect(x,y,w,h);cx.fill();}
+  function draw(){
     cx.globalAlpha=1;cx.fillStyle=pat.r;cx.fillRect(0,0,W,H);
-    var m=mowerPos();
-    cx.globalAlpha=alpha;
+    var m=pos();cx.globalAlpha=alpha;
     for(var i=0;i<=m.r;i++){
       cx.fillStyle=i%2?pat.b:pat.a;
       if(i<m.r)cx.fillRect(0,i*rowH,W,rowH);
@@ -442,57 +527,40 @@ footer .brand{color:var(--fg);font-size:18px}
       else cx.fillRect(m.x,i*rowH,W-m.x,rowH);
     }
     cx.globalAlpha=1;
-    /* clippings */
     for(var k=parts.length-1;k>=0;k--){
       var q=parts[k];q.l-=.016;if(q.l<=0){parts.splice(k,1);continue;}
       q.x+=q.vx;q.y+=q.vy;q.vy*=.94;q.vx*=.94;
-      cx.fillStyle='rgba(190,235,150,'+(q.l*.9)+')';cx.fillRect(q.x,q.y,2,2);
+      cx.fillStyle='rgba(200,240,150,'+(q.l*.9)+')';cx.fillRect(q.x,q.y,2,2);
     }
-    /* mower, seen from above */
     if(phase===0){
-      var s=rowH/60;
+      var s=rowH/62;
       cx.save();cx.translate(m.x,m.y);cx.scale(m.dir*s,s);
-      cx.fillStyle='rgba(0,0,0,.28)';rr(-34,-22,62,52,8);
-      cx.fillStyle='#22271f';rr(-2,-26,26,52,7);          /* deck */
-      cx.fillStyle='#111';rr(-36,-24,14,9,3);rr(-36,15,14,9,3); /* wheels */
-      cx.fillStyle=css('--marigold');rr(-34,-15,38,30,6);  /* body */
-      cx.fillStyle='#22271f';rr(-24,-8,14,16,4);          /* seat */
+      cx.fillStyle='rgba(0,0,0,.28)';rr(-20,-22,50,52,8);
+      cx.fillStyle='#111';rr(-18,-27,12,8,3);rr(-18,19,12,8,3);rr(16,-27,10,7,3);rr(16,20,10,7,3);
+      cx.fillStyle=css('--accent');rr(-16,-24,44,48,7);          /* deck */
+      cx.fillStyle='#1c1f1a';rr(-6,-11,22,22,5);                 /* engine */
+      cx.strokeStyle=css('--accent');cx.lineWidth=3;cx.beginPath();cx.moveTo(-16,-14);cx.lineTo(-50,-14);cx.moveTo(-16,14);cx.lineTo(-50,14);cx.stroke();
+      cx.fillStyle='#1c1f1a';rr(-56,-19,8,38,3);                 /* handle bar */
       cx.restore();
     }
-    /* tree canopies */
-    var u=Math.min(1,Math.max(.55,W/1200));
-    trees.forEach(function(tr,i){
-      var x=tr[0]*W,y=tr[1]*H,r=tr[2]*u,sw=reduce?0:Math.sin(t/1400+i*2)*2.5;
-      cx.fillStyle='rgba(0,0,0,.25)';disc(x+r*.22,y+r*.28,r);
-      cx.fillStyle='#174a22';disc(x+sw,y,r);
-      cx.fillStyle='#1f5e2b';disc(x-r*.28+sw*1.3,y-r*.22,r*.62);disc(x+r*.3+sw,y+r*.18,r*.5);
-      cx.fillStyle='#2a7435';disc(x-r*.1+sw*1.6,y-r*.38,r*.34);disc(x+r*.36+sw*1.2,y-r*.3,r*.26);
-    });
   }
-  function rr(x,y,w,h,r){cx.beginPath();if(cx.roundRect)cx.roundRect(x,y,w,h,r);else cx.rect(x,y,w,h);cx.fill();}
-  function disc(x,y,r){cx.beginPath();cx.arc(x,y,r,0,6.2832);cx.fill();}
   function tick(t){
     if(!running)return;
     var dt=Math.min(.05,(t-last)/1000||0);last=t;
     if(phase===0){
-      p+=dt/2.6;
-      var m=mowerPos();
-      for(var i=0;i<3;i++)parts.push({x:m.x-m.dir*rowH*.2,y:m.y+(Math.random()-.5)*rowH*.7,vx:-m.dir*(1+Math.random()*2),vy:(Math.random()-.5)*3,l:.5+Math.random()*.5});
+      p+=dt/2.8;var m=pos();
+      for(var i=0;i<3;i++)parts.push({x:m.x,y:m.y+(Math.random()-.5)*rowH*.7,vx:-m.dir*(1+Math.random()*2),vy:(Math.random()-.5)*3,l:.5+Math.random()*.5});
       if(p>=rows){p=rows;phase=1;hold=0;note.textContent='Visit complete · report sent';}
     }else if(phase===1){hold+=dt;if(hold>2.6)phase=2;}
     else{alpha-=dt/2;if(alpha<=0){alpha=1;p=0;phase=0;note.textContent='Crew on site · mow height 3.0 in';}}
-    draw(t);
-    requestAnimationFrame(tick);
+    draw();requestAnimationFrame(tick);
   }
   function start(){if(running||reduce||!visible)return;running=true;last=performance.now();requestAnimationFrame(tick);}
-  build();
-  p = reduce ? 0 : 0; size();
-  p = reduce ? rows-.45 : rows*.38; draw(0);
-  if('ResizeObserver' in window)new ResizeObserver(size).observe(hero);else addEventListener('resize',size);
-  if('IntersectionObserver' in window)new IntersectionObserver(function(e){visible=e[0].isIntersecting;if(visible)start();else running=false;}).observe(hero);
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(){build();});
+  build();size();p=reduce?rows-.45:rows*.4;draw();
+  if('ResizeObserver' in window)new ResizeObserver(size).observe(host);else addEventListener('resize',size);
+  if('IntersectionObserver' in window)new IntersectionObserver(function(e){visible=e[0].isIntersecting;if(visible)start();else running=false;}).observe(host);else{visible=true;start();}
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change',build);
   new MutationObserver(build).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
-  start();
 })();
 </script>
 </body>
