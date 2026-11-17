@@ -338,7 +338,9 @@ footer .brand{color:var(--fg);font-size:18px}
         <div><a class="em" href="mailto:westernmeadow@gmail.com">westernmeadow@gmail.com</a><button class="copy" type="button" id="copy-em" data-copy="westernmeadow@gmail.com">Copy</button></div>
       </div>
     </div>
-    <form id="walk" class="rv" novalidate>
+    <form id="walk" class="rv" name="site-walk" method="POST" data-netlify="true" netlify-honeypot="website" novalidate>
+      <input type="hidden" name="form-name" value="site-walk">
+      <p hidden><label for="f-web">Leave this empty<input id="f-web" name="website" tabindex="-1" autocomplete="off"></label></p>
       <div class="two">
         <label for="f-name">Your name<input id="f-name" name="name" autocomplete="name" required></label>
         <label for="f-co">Company<input id="f-co" name="company" autocomplete="organization"></label>
@@ -475,7 +477,12 @@ footer .brand{color:var(--fg);font-size:18px}
     sent.hidden=false;
     if(!n.value.trim()){sent.textContent='Add your name so we know who to ask for.';n.focus();return;}
     if(!em.validity.valid||!em.value){sent.textContent='Add an email address we can reply to.';em.focus();return;}
-    sent.textContent='This form is not connected to an inbox yet, so nothing was sent. Please call 361-442-5084 or email westernmeadow@gmail.com.';
+    var btn=form.querySelector('button[type="submit"]'),fail='We could not send your request. Please call 361-442-5084 or email westernmeadow@gmail.com.';
+    btn.disabled=true;sent.textContent='Sending…';
+    fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(new FormData(form)).toString()})
+      .then(function(r){if(!r.ok)throw 0;form.reset();sent.textContent='Request sent. We will be in touch to schedule your site walk.';})
+      .catch(function(){sent.textContent=fail;})
+      .then(function(){btn.disabled=false;});
   });
   [].forEach.call(document.querySelectorAll('.copy'),function(b){
     b.addEventListener('click',function(){
